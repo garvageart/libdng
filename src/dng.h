@@ -116,6 +116,8 @@
 
 
 // DNG tags not present in libtiff
+#define DNGTAG_CFAREPEATPATTERNDIM 33421
+#define DNGTAG_CFAPATTERN 33422
 #define DNGTAG_FORWARDMATRIX1 50964
 #define DNGTAG_FORWARDMATRIX2 50965
 #define DNGTAG_COLOR_MATRIX_1 50721
@@ -142,4 +144,6 @@ static const TIFFFieldInfo custom_dng_fields[] = {
 	{DNGTAG_PROFILE_HUE_SAT_MAP_DIMS,   -1, -1, TIFF_FLOAT,     FIELD_CUSTOM, 1, 1, "ProfileHueSatMapDims"},
 	{DNGTAG_PROFILE_HUE_SAT_MAP_DATA_1, -1, -1, TIFF_FLOAT,     FIELD_CUSTOM, 1, 1, "ProfileHueSatMapData1"},
 	{DNGTAG_PROFILE_HUE_SAT_MAP_DATA_2, -1, -1, TIFF_FLOAT,     FIELD_CUSTOM, 1, 1, "ProfileHueSatMapData2"},
+	{DNGTAG_CFAREPEATPATTERNDIM,        -1, -1, TIFF_SHORT,     FIELD_CUSTOM, 1, 1, "CFARepeatPatternDim"},
+	{DNGTAG_CFAPATTERN,                 -1, -1, TIFF_BYTE,      FIELD_CUSTOM, 1, 1, "CFAPattern"},
 };

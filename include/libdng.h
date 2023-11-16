@@ -14,6 +14,13 @@ typedef struct {
 		char *software;
 		uint16_t orientation;
 		struct tm datetime;
+
+		// Raw image data
+		uint16_t bayer_pattern_dimensions[2];
+		float colormatrix1[9];
+		float colormatrix2[9];
+		float neutral[3];
+		uint8_t cfapattern[4];
 } libdng_info;
 
 EXPORT int

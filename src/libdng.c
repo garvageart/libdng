@@ -32,6 +32,21 @@ void
 libdng_new(libdng_info *dng)
 {
 	dng->orientation = 1;
+	dng->bayer_pattern_dimensions[0] = 2;
+	dng->bayer_pattern_dimensions[1] = 2;
+
+	for (size_t i = 0; i < 9; i++) {
+		dng->colormatrix1[i] = 0.0f;
+		dng->colormatrix2[i] = 0.0f;
+	}
+	dng->colormatrix1[0] = 1.0f;
+	dng->colormatrix1[4] = 1.0f;
+	dng->colormatrix1[8] = 1.0f;
+
+	dng->cfapattern[0] = 0;
+	dng->cfapattern[1] = 1;
+	dng->cfapattern[2] = 1;
+	dng->cfapattern[3] = 2;
 }
 
 int
@@ -81,11 +96,15 @@ libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned in
 	if (!tif) {
 		return -1;
 	}
+	libdng_set_datetime_now(dng);
 
 	char datetime[20] = {0};
 	if (dng->datetime.tm_year) {
 		strftime(datetime, 20, "%Y:%m:%d %H:%M:%S", &dng->datetime);
 	}
+
+	uint64_t ifd0_offsets[] = {0L};
+
 
 	// First IFD describes the thumbnail and contains most of the metadata
 	// Tags are in numerical order
@@ -95,13 +114,16 @@ libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned in
 	TIFFSetField(tif, TIFFTAG_BITSPERSAMPLE, 8);
 	TIFFSetField(tif, TIFFTAG_COMPRESSION, COMPRESSION_NONE);
 	TIFFSetField(tif, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB);
+	TIFFSetField(tif, TIFFTAG_ORIENTATION, dng->orientation);
+	TIFFSetField(tif, TIFFTAG_SAMPLESPERPIXEL, 3);
+	TIFFSetField(tif, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
+	TIFFSetField(tif, DNGTAG_COLOR_MATRIX_1, 9, dng->colormatrix1);
+	TIFFSetField(tif, DNGTAG_ASSHOTNEUTRAL, 3, dng->neutral);
 
 	if (dng->camera_make != NULL)
 		TIFFSetField(tif, TIFFTAG_MAKE, dng->camera_make);
 	if (dng->camera_model != NULL)
 		TIFFSetField(tif, TIFFTAG_MODEL, dng->camera_model);
-	if (dng->orientation != 1)
-		TIFFSetField(tif, TIFFTAG_ORIENTATION, dng->orientation);
 	if (dng->software != NULL)
 		TIFFSetField(tif, TIFFTAG_SOFTWARE, dng->software);
 
@@ -120,6 +142,7 @@ libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned in
 		snprintf(ucm, sizeof(ucm), "%s %s", dng->camera_make, dng->camera_model);
 	}
 	TIFFSetField(tif, DNGTAG_UNIQUECAMERAMODEL, ucm);
+	TIFFSetField(tif, TIFFTAG_SUBIFD, 1, &ifd0_offsets);
 
 	// Write black thumbnail, only windows uses this
 	{
@@ -138,6 +161,14 @@ libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned in
 	TIFFSetField(tif, TIFFTAG_SUBFILETYPE, DNG_SUBFILETYPE_ORIGINAL);
 	TIFFSetField(tif, TIFFTAG_IMAGEWIDTH, width);
 	TIFFSetField(tif, TIFFTAG_IMAGELENGTH, height);
+	TIFFSetField(tif, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_CFA);
+	TIFFSetField(tif, TIFFTAG_SAMPLESPERPIXEL, 1);
+	TIFFSetField(tif, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
+	TIFFSetField(tif, TIFFTAG_SAMPLEFORMAT, SAMPLEFORMAT_UINT);
+	TIFFSetField(tif, TIFFTAG_CFAREPEATPATTERNDIM, 2, dng->bayer_pattern_dimensions);
+	TIFFSetField(tif, TIFFTAG_BITSPERSAMPLE, 8);
+	TIFFSetField(tif, DNGTAG_CFAPATTERN, 4, dng->cfapattern);
+
 	unsigned int stride = width;
 	for (int row = 0; row < height; row++) {
 		TIFFWriteScanline(tif, (void *) data + (row * stride), row, 0);
@@ -146,21 +177,30 @@ libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned in
 		return -1;
 	}
 
-	TIFFCreateEXIFDirectory(tif);
+	if (TIFFCreateEXIFDirectory(tif) != 0) {
+		fprintf(stderr, "Could not create EXIF\n");
+		return -1;
+	}
 
 	if (dng->datetime.tm_year) {
-		TIFFSetField(tif, EXIFTAG_DATETIMEORIGINAL, datetime);
+		if (!TIFFSetField(tif, EXIFTAG_DATETIMEORIGINAL, datetime)) {
+			fprintf(stderr, "Could not write datetimeoriginal\n");
+		}
 		TIFFSetField(tif, EXIFTAG_DATETIMEDIGITIZED, datetime);
 	}
 
 	uint64_t exif_offset = 0;
-	TIFFWriteCustomDirectory(tif, &exif_offset);
+	if (!TIFFWriteCustomDirectory(tif, &exif_offset)) {
+		fprintf(stderr, "Can't write EXIF\n");
+		return -1;
+	}
 	TIFFFreeDirectory(tif);
 
 	// Update exif pointer
 	TIFFSetDirectory(tif, 0);
 	TIFFSetField(tif, TIFFTAG_EXIFIFD, exif_offset);
 	TIFFRewriteDirectory(tif);
+
 
 	TIFFClose(tif);
 

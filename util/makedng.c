@@ -25,7 +25,7 @@ main(int argc, char *argv[])
 	long val;
 
 	libdng_init();
-	libdng_info info;
+	libdng_info info = {0};
 	libdng_new(&info);
 	unsigned int width = 0;
 	unsigned int height = 0;
@@ -66,7 +66,7 @@ main(int argc, char *argv[])
 		return 1;
 	}
 
-	printf("Reading %s\n", argv[optind]);
+	printf("Reading %s...\n", argv[optind]);
 	FILE *src = fopen(argv[optind], "r");
 	if (src == NULL) {
 		fprintf(stderr, "Can't open source file: %s\n", strerror(errno));
@@ -79,7 +79,11 @@ main(int argc, char *argv[])
 	fread(data, src_size, 1, src);
 	fclose(src);
 
-	libdng_write(&info, argv[optind + 1], width, height, data, src_size);
+	printf("Writing %s...\n", argv[optind + 1]);
+	if (libdng_write(&info, argv[optind + 1], width, height, data, src_size) < 0) {
+		fprintf(stderr, "Could not write DNG\n");
+		return 1;
+	}
 	free(data);
 	libdng_free(&info);
 	return 0;
