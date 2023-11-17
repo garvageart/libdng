@@ -18,10 +18,10 @@ magick -size 1280x720 gradient: -colorspace RGB scratch/data.rgb
 
 # Generate DNG
 
-$makedng -w 1280 -h 720 -p RGGB scratch/data.rgb scratch/RGGB.dng
-$makedng -w 1280 -h 720 -p GRBG scratch/data.rgb scratch/GRBG.dng
-$makedng -w 1280 -h 720 -p GBRG scratch/data.rgb scratch/GBRG.dng
-$makedng -w 1280 -h 720 -p BGGR scratch/data.rgb scratch/BGGR.dng
+$makedng -w 1280 -h 720 -p RGGB -m Test,RGGB scratch/data.rgb scratch/RGGB.dng
+$makedng -w 1280 -h 720 -p GRBG -m Test,GRBG scratch/data.rgb scratch/GRBG.dng
+$makedng -w 1280 -h 720 -p GBRG -m Test,GBRG scratch/data.rgb scratch/GBRG.dng
+$makedng -w 1280 -h 720 -p BGGR -m Test,BGGR scratch/data.rgb scratch/BGGR.dng
 
 $makedng -w 1280 -h 720 -p RG10 scratch/data.rgb scratch/RG10.dng
 

@@ -31,8 +31,9 @@ main(int argc, char *argv[])
 	unsigned int width = 0;
 	unsigned int height = 0;
 	char *pixelfmt = NULL;
+	char *model = NULL;
 
-	while ((c = getopt(argc, argv, "w:h:p:")) != -1) {
+	while ((c = getopt(argc, argv, "w:h:p:m:")) != -1) {
 		switch (c) {
 			case 'w':
 				val = strtol(optarg, &end, 10);
@@ -44,6 +45,9 @@ main(int argc, char *argv[])
 				break;
 			case 'p':
 				pixelfmt = optarg;
+				break;
+			case 'm':
+				model = optarg;
 				break;
 			case '?':
 				if (optopt == 'd' || optopt == 'l') {
@@ -80,6 +84,19 @@ main(int argc, char *argv[])
 		fprintf(stderr, "Invalid pixel format supplied\n");
 		usage(argv[0]);
 		return 1;
+	}
+
+	if (model != NULL) {
+		char *make = model;
+		for (size_t i = 0; i < strlen(model); i++) {
+			if (model[i] == ',') {
+				model[i] = '\0';
+				model = &model[i + 1];
+			}
+		}
+		printf("Make: '%s'\n", make);
+		printf("Model: '%s'\n", model);
+		libdng_set_make_model(&info, make, model);
 	}
 
 	printf("Reading %s...\n", argv[optind]);
