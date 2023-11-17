@@ -33,6 +33,9 @@ EXPORT void
 libdng_free(libdng_info *dng);
 
 EXPORT int
+libdng_set_mode_from_name(libdng_info *dng, const char *name);
+
+EXPORT int
 libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, uint8_t *data,
 	size_t length);
 

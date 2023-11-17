@@ -1,5 +1,6 @@
 #include "libdng.h"
 #include "dng.h"
+#include "mode.h"
 
 #include <stdio.h>
 #include <tiffio.h>
@@ -47,6 +48,23 @@ libdng_new(libdng_info *dng)
 	dng->cfapattern[1] = 1;
 	dng->cfapattern[2] = 1;
 	dng->cfapattern[3] = 2;
+}
+
+int
+libdng_set_mode_from_name(libdng_info *dng, const char *name)
+{
+	int index = dng_mode_from_name(name);
+	if (index == 0) {
+		fprintf(stderr, "Invalid mode '%s'\n", name);
+		return 0;
+	}
+
+	uint32_t cfa = dng_cfa_from_mode(index);
+	dng->cfapattern[0] = (cfa >> 24) & 0xFF;
+	dng->cfapattern[1] = (cfa >> 16) & 0xFF;
+	dng->cfapattern[2] = (cfa >> 8) & 0xFF;
+	dng->cfapattern[3] = (cfa >> 0) & 0xFF;
+	return 1;
 }
 
 int

@@ -14,6 +14,7 @@ usage(char *name)
 	fprintf(stderr, "Arguments:\n");
 	fprintf(stderr, "  -w width    Source data width\n");
 	fprintf(stderr, "  -h height   Source data height\n");
+	fprintf(stderr, "  -p fmt      Source data pixelformat\n");
 }
 
 int
@@ -29,8 +30,9 @@ main(int argc, char *argv[])
 	libdng_new(&info);
 	unsigned int width = 0;
 	unsigned int height = 0;
+	char *pixelfmt = NULL;
 
-	while ((c = getopt(argc, argv, "w:h:")) != -1) {
+	while ((c = getopt(argc, argv, "w:h:p:")) != -1) {
 		switch (c) {
 			case 'w':
 				val = strtol(optarg, &end, 10);
@@ -39,6 +41,9 @@ main(int argc, char *argv[])
 			case 'h':
 				val = strtol(optarg, &end, 10);
 				height = (unsigned int) val;
+				break;
+			case 'p':
+				pixelfmt = optarg;
 				break;
 			case '?':
 				if (optopt == 'd' || optopt == 'l') {
@@ -62,6 +67,17 @@ main(int argc, char *argv[])
 
 	if (width == 0) {
 		fprintf(stderr, "The width argument is required\n");
+		usage(argv[0]);
+		return 1;
+	}
+
+	if (pixelfmt == NULL) {
+		fprintf(stderr, "The pixel format argument is required\n");
+		usage(argv[0]);
+		return 1;
+	}
+	if (!libdng_set_mode_from_name(&info, pixelfmt)) {
+		fprintf(stderr, "Invalid pixel format supplied\n");
 		usage(argv[0]);
 		return 1;
 	}
