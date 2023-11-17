@@ -12,9 +12,10 @@ usage(char *name)
 	fprintf(stderr, "Usage: %s -w width -h height srcfile dstfile\n", name);
 	fprintf(stderr, "Convert raw sensor data to DNG\n\n");
 	fprintf(stderr, "Arguments:\n");
-	fprintf(stderr, "  -w width    Source data width\n");
-	fprintf(stderr, "  -h height   Source data height\n");
-	fprintf(stderr, "  -p fmt      Source data pixelformat\n");
+	fprintf(stderr, "  -w width       Source data width\n");
+	fprintf(stderr, "  -h height      Source data height\n");
+	fprintf(stderr, "  -p fmt         Source data pixelformat\n");
+	fprintf(stderr, "  -m make,model  Make and model, comma seperated\n");
 }
 
 int
