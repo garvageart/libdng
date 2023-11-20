@@ -25,6 +25,11 @@ $makedng -w 1280 -h 720 -p BGGR -m Test,BGGR scratch/data.rgb scratch/BGGR.dng
 
 $makedng -w 1280 -h 720 -p RG10 scratch/data.rgb scratch/RG10.dng
 
+$makedng -w 1280 -h 720 -p RGGB \
+  -s "Testsuite" \
+  -o 2 \
+  scratch/data.rgb scratch/fields.dng
+
 # Validate DNG
 dng_validate scratch/RGGB.dng
 dng_validate scratch/GRBG.dng
@@ -32,3 +37,5 @@ dng_validate scratch/GBRG.dng
 dng_validate scratch/BGGR.dng
 
 dng_validate scratch/RG10.dng
+
+dng_validate scratch/fields.dng

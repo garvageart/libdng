@@ -16,6 +16,8 @@ usage(char *name)
 	fprintf(stderr, "  -h height      Source data height\n");
 	fprintf(stderr, "  -p fmt         Source data pixelformat\n");
 	fprintf(stderr, "  -m make,model  Make and model, comma seperated\n");
+	fprintf(stderr, "  -s software    Software name\n");
+	fprintf(stderr, "  -o orientation Orientation number [0-9]\n");
 }
 
 int
@@ -33,8 +35,10 @@ main(int argc, char *argv[])
 	unsigned int height = 0;
 	char *pixelfmt = NULL;
 	char *model = NULL;
+	char *software = NULL;
+	uint16_t orientation = 0;
 
-	while ((c = getopt(argc, argv, "w:h:p:m:")) != -1) {
+	while ((c = getopt(argc, argv, "w:h:p:o:m:s:")) != -1) {
 		switch (c) {
 			case 'w':
 				val = strtol(optarg, &end, 10);
@@ -44,11 +48,22 @@ main(int argc, char *argv[])
 				val = strtol(optarg, &end, 10);
 				height = (unsigned int) val;
 				break;
+			case 'o':
+				val = strtol(optarg, &end, 10);
+				if (val < 1 || val > 8) {
+					fprintf(stderr, "Orientation out of range\n");
+					return 1;
+				}
+				orientation = (uint16_t) val;
+				break;
 			case 'p':
 				pixelfmt = optarg;
 				break;
 			case 'm':
 				model = optarg;
+				break;
+			case 's':
+				software = optarg;
 				break;
 			case '?':
 				if (optopt == 'd' || optopt == 'l') {
@@ -98,6 +113,14 @@ main(int argc, char *argv[])
 		printf("Make: '%s'\n", make);
 		printf("Model: '%s'\n", model);
 		libdng_set_make_model(&info, make, model);
+	}
+
+	if (software != NULL) {
+		libdng_set_software(&info, software);
+	}
+
+	if (orientation > 0) {
+		libdng_set_orientation(&info, orientation);
 	}
 
 	printf("Reading %s...\n", argv[optind]);
