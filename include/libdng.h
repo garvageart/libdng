@@ -51,6 +51,9 @@ EXPORT int
 libdng_set_make_model(libdng_info *dng, const char *make, const char *model);
 
 EXPORT int
+libdng_set_software(libdng_info *dng, const char *software);
+
+EXPORT int
 libdng_set_datetime(libdng_info *dng, struct tm time);
 
 EXPORT int

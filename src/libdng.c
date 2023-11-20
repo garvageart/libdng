@@ -94,11 +94,25 @@ libdng_set_make_model(libdng_info *dng, const char *make, const char *model)
 	return 1;
 }
 
+int
+libdng_set_software(libdng_info *dng, const char *software)
+{
+	if (dng == NULL)
+		return 0;
+
+	dng->software = strdup(software);
+	return 1;
+}
+
 void
 libdng_free(libdng_info *dng)
 {
 	if (dng->camera_make != NULL)
 		free(dng->camera_make);
+	if (dng->camera_model != NULL)
+		free(dng->camera_model);
+	if (dng->software != NULL)
+		free(dng->software);
 }
 
 int
