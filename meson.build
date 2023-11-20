@@ -47,8 +47,15 @@ pkg_mod.generate(libraries: libdng,
                 filebase: 'libdng',
                 description: 'The wrapper library to generate DNG files with libtiff')
 
-executable('makedng', 'util/makedng.c',
+makedng = executable('makedng', 'util/makedng.c',
     link_with: libdng,
     include_directories: inc,
     install: true,
+)
+
+test_dng_validate = find_program('tests/test_dng_validate.sh')
+dng_validate = find_program('dng_validate')
+test('dng_validate', test_dng_validate,
+    args: [makedng.full_path()],
+    suite: 'adobe',
 )
