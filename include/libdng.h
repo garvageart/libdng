@@ -36,10 +36,13 @@ EXPORT int
 libdng_set_mode_from_name(libdng_info *dng, const char *name);
 
 EXPORT int
-libdng_set_make_model(libdng_info *dng, char *make, char *model);
+libdng_set_mode_from_pixfmt(libdng_info *dng, uint32_t pixfmt);
 
 EXPORT int
-libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, uint8_t *data,
+libdng_set_make_model(libdng_info *dng, const char *make, const char *model);
+
+EXPORT int
+libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data,
 	size_t length);
 
 #endif //LIBDNG_LIBRARY_H

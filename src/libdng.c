@@ -51,14 +51,8 @@ libdng_new(libdng_info *dng)
 }
 
 int
-libdng_set_mode_from_name(libdng_info *dng, const char *name)
+libdng_set_mode_from_index(libdng_info *dng, int index)
 {
-	int index = dng_mode_from_name(name);
-	if (index == 0) {
-		fprintf(stderr, "Invalid mode '%s'\n", name);
-		return 0;
-	}
-
 	uint32_t cfa = dng_cfa_from_mode(index);
 	dng->cfapattern[0] = (cfa >> 24) & 0xFF;
 	dng->cfapattern[1] = (cfa >> 16) & 0xFF;
@@ -68,7 +62,29 @@ libdng_set_mode_from_name(libdng_info *dng, const char *name)
 }
 
 int
-libdng_set_make_model(libdng_info *dng, char *make, char *model)
+libdng_set_mode_from_pixfmt(libdng_info *dng, uint32_t pixfmt)
+{
+	int index = dng_mode_from_pixfmt(pixfmt);
+	if (index == 0) {
+		fprintf(stderr, "Invalid pixfmt '%d'\n", pixfmt);
+		return 0;
+	}
+	return libdng_set_mode_from_index(dng, index);
+}
+
+int
+libdng_set_mode_from_name(libdng_info *dng, const char *name)
+{
+	int index = dng_mode_from_name(name);
+	if (index == 0) {
+		fprintf(stderr, "Invalid mode '%s'\n", name);
+		return 0;
+	}
+	return libdng_set_mode_from_index(dng, index);
+}
+
+int
+libdng_set_make_model(libdng_info *dng, const char *make, const char *model)
 {
 	if (dng == NULL)
 		return 0;
@@ -108,7 +124,7 @@ libdng_set_datetime_now(libdng_info *dng)
 }
 
 int
-libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, uint8_t *data, size_t length)
+libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data, size_t length)
 {
 	TIFF *tif = TIFFOpen(path, "w");
 	if (!tif) {

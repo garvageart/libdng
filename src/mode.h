@@ -12,12 +12,16 @@
 struct pixelformat {
 		char *fourcc;
 		char *name;
+		uint32_t pixfmt;
 		uint32_t cfa;
 		int bits_per_sample;
 };
 
 int
 dng_mode_from_name(const char *name);
+
+int
+dng_mode_from_pixfmt(uint32_t pixfmt);
 
 uint32_t
 dng_cfa_from_mode(int index);
