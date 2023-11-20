@@ -1,6 +1,7 @@
 #include "libdng.h"
 #include "dng.h"
 #include "mode.h"
+#include "repack.h"
 
 #include <stdio.h>
 #include <tiffio.h>
@@ -58,6 +59,8 @@ libdng_set_mode_from_index(libdng_info *dng, int index)
 	dng->cfapattern[1] = (cfa >> 16) & 0xFF;
 	dng->cfapattern[2] = (cfa >> 8) & 0xFF;
 	dng->cfapattern[3] = (cfa >> 0) & 0xFF;
+	dng->needs_repack = dng_mode_needs_repack(index);
+	dng->bit_depth = dng_bitdepth_from_mode(index);
 	return 1;
 }
 
@@ -151,6 +154,13 @@ int
 libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data,
 	size_t length)
 {
+
+	uint8_t *raw_frame = (uint8_t *) data;
+	if (dng->needs_repack) {
+		raw_frame = malloc(length);
+		dng_repack(data, raw_frame, width, height, dng->bit_depth);
+	}
+
 	TIFF *tif = TIFFOpen(path, "w");
 	if (!tif) {
 		return -1;
@@ -230,7 +240,7 @@ libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned in
 
 	unsigned int stride = width;
 	for (int row = 0; row < height; row++) {
-		TIFFWriteScanline(tif, (void *) data + (row * stride), row, 0);
+		TIFFWriteScanline(tif, (void *) raw_frame + (row * stride), row, 0);
 	}
 	if (!TIFFWriteDirectory(tif)) {
 		return -1;
@@ -263,5 +273,9 @@ libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned in
 
 	TIFFClose(tif);
 
+	if (dng->needs_repack) {
+		free(raw_frame);
+	}
+	
 	return 0;
 }

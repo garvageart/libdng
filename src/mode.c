@@ -72,6 +72,7 @@ static struct pixelformat pixelformat_lut[] = {
 		.pixfmt = V4L2_PIX_FMT_SRGGB10P,
 		.cfa = CFA_RGGB,
 		.bits_per_sample = 10,
+		.repack = true,
 	},
 	{
 		.fourcc = "pgAA",
@@ -79,6 +80,7 @@ static struct pixelformat pixelformat_lut[] = {
 		.pixfmt = V4L2_PIX_FMT_SGRBG10P,
 		.cfa = CFA_GRBG,
 		.bits_per_sample = 10,
+		.repack = true,
 	},
 	{
 		.fourcc = "pGAA",
@@ -86,6 +88,7 @@ static struct pixelformat pixelformat_lut[] = {
 		.pixfmt = V4L2_PIX_FMT_SGBRG10P,
 		.cfa = CFA_GBRG,
 		.bits_per_sample = 10,
+		.repack = true,
 	},
 	{
 		.fourcc = "pBAA",
@@ -93,6 +96,7 @@ static struct pixelformat pixelformat_lut[] = {
 		.pixfmt = V4L2_PIX_FMT_SBGGR10P,
 		.cfa = CFA_BGGR,
 		.bits_per_sample = 10,
+		.repack = true,
 	},
 	{
 		.fourcc = "RG12",
@@ -128,6 +132,7 @@ static struct pixelformat pixelformat_lut[] = {
 		.pixfmt = V4L2_PIX_FMT_SRGGB12P,
 		.cfa = CFA_RGGB,
 		.bits_per_sample = 12,
+		.repack = true,
 	},
 	{
 		.fourcc = "pgCC",
@@ -135,6 +140,7 @@ static struct pixelformat pixelformat_lut[] = {
 		.pixfmt = V4L2_PIX_FMT_SGRBG12P,
 		.cfa = CFA_GRBG,
 		.bits_per_sample = 12,
+		.repack = true,
 	},
 	{
 		.fourcc = "pGCC",
@@ -142,6 +148,7 @@ static struct pixelformat pixelformat_lut[] = {
 		.pixfmt = V4L2_PIX_FMT_SGBRG12P,
 		.cfa = CFA_GBRG,
 		.bits_per_sample = 12,
+		.repack = true,
 	},
 	{
 		.fourcc = "pBCC",
@@ -149,6 +156,7 @@ static struct pixelformat pixelformat_lut[] = {
 		.pixfmt = V4L2_PIX_FMT_SBGGR12P,
 		.cfa = CFA_BGGR,
 		.bits_per_sample = 12,
+		.repack = true,
 	},
 	{
 		.fourcc = "RG16",
@@ -211,4 +219,16 @@ uint32_t
 dng_cfa_from_mode(int index)
 {
 	return pixelformat_lut[index].cfa;
+}
+
+int
+dng_bitdepth_from_mode(int index)
+{
+	return pixelformat_lut[index].bits_per_sample;
+}
+
+bool
+dng_mode_needs_repack(int index)
+{
+	return pixelformat_lut[index].repack;
 }

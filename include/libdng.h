@@ -21,6 +21,9 @@ typedef struct {
 		float colormatrix2[9];
 		float neutral[3];
 		uint8_t cfapattern[4];
+
+		uint16_t bit_depth;
+		bool needs_repack;
 } libdng_info;
 
 #define LIBDNG_ORIENTATION_TOPLEFT 1
