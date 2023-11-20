@@ -1,6 +1,7 @@
 project('libdng', 'c',
     version: '0.1.0',
     license: 'GPL',
+    default_options: ['c_std=c11'],
 )
 
 libtiff = dependency('libtiff-4')
@@ -59,3 +60,23 @@ test('dng_validate', test_dng_validate,
     args: [makedng.full_path()],
     suite: 'adobe',
 )
+
+scdoc = dependency('scdoc', required: get_option('man-pages'), version: '>= 1.9.7', native: true)
+if scdoc.found()
+    man_pages = ['doc/makedng.1.scd']
+    foreach src : man_pages
+		topic = src.split('/')[1].split('.')[0]
+		section = src.split('.')[1]
+		output = topic + '.' + section
+
+		custom_target(
+			output,
+			input: files(src),
+			output: output,
+			command: [
+				'sh', '-c', '@0@ < @INPUT@ > @1@'.format(scdoc.get_variable(pkgconfig: 'scdoc'), output)
+			],
+			install: true,
+			install_dir: join_paths(get_option('mandir'), 'man' + section),
+		)    endforeach
+endif
