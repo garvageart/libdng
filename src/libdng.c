@@ -124,7 +124,18 @@ libdng_set_datetime_now(libdng_info *dng)
 }
 
 int
-libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data, size_t length)
+libdng_set_orientation(libdng_info *dng, uint16_t orientation)
+{
+	if (dng == NULL)
+		return 0;
+
+	dng->orientation = orientation;
+	return 1;
+}
+
+int
+libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data,
+	size_t length)
 {
 	TIFF *tif = TIFFOpen(path, "w");
 	if (!tif) {
