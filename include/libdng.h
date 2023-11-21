@@ -17,10 +17,21 @@ typedef struct {
 
 		// Raw image data
 		uint16_t bayer_pattern_dimensions[2];
-		float colormatrix1[9];
-		float colormatrix2[9];
 		float neutral[3];
 		uint8_t cfapattern[4];
+
+		// Calibration data
+		float color_matrix_1[9];
+		float color_matrix_2[9];
+		float forward_matrix_1[9];
+		float forward_matrix_2[9];
+		unsigned short illuminant_1;
+		unsigned short illuminant_2;
+		unsigned int hue_sat_map_dims[3];
+		size_t tone_curve_length;
+		float *tone_curve;
+		float *hue_sat_map_data_1;
+		float *hue_sat_map_data_2;
 
 		uint16_t bit_depth;
 		bool needs_repack;
@@ -64,6 +75,9 @@ libdng_set_datetime_now(libdng_info *dng);
 
 EXPORT int
 libdng_set_orientation(libdng_info *dng, uint16_t orientation);
+
+EXPORT int
+libdng_load_calibration_file(libdng_info *dng, const char *path);
 
 EXPORT int
 libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data,

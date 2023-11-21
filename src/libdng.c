@@ -38,12 +38,12 @@ libdng_new(libdng_info *dng)
 	dng->bayer_pattern_dimensions[1] = 2;
 
 	for (size_t i = 0; i < 9; i++) {
-		dng->colormatrix1[i] = 0.0f;
-		dng->colormatrix2[i] = 0.0f;
+		dng->color_matrix_1[i] = 0.0f;
+		dng->color_matrix_2[i] = 0.0f;
 	}
-	dng->colormatrix1[0] = 1.0f;
-	dng->colormatrix1[4] = 1.0f;
-	dng->colormatrix1[8] = 1.0f;
+	dng->color_matrix_1[0] = 1.0f;
+	dng->color_matrix_1[4] = 1.0f;
+	dng->color_matrix_1[8] = 1.0f;
 
 	dng->cfapattern[0] = 0;
 	dng->cfapattern[1] = 1;
@@ -186,7 +186,7 @@ libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned in
 	TIFFSetField(tif, TIFFTAG_ORIENTATION, dng->orientation);
 	TIFFSetField(tif, TIFFTAG_SAMPLESPERPIXEL, 3);
 	TIFFSetField(tif, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
-	TIFFSetField(tif, DNGTAG_COLOR_MATRIX_1, 9, dng->colormatrix1);
+	TIFFSetField(tif, DNGTAG_COLOR_MATRIX_1, 9, dng->color_matrix_1);
 	TIFFSetField(tif, DNGTAG_ASSHOTNEUTRAL, 3, dng->neutral);
 
 	if (dng->camera_make != NULL)

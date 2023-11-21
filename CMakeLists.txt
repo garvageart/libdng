@@ -6,7 +6,7 @@ set(LIBRARY_VERSION_MAJOR 0)
 set(LIBRARY_VERSION_STRING 0.1)
 set(CMAKE_C_VISIBILITY_PRESET hidden)
 
-add_library(libdng SHARED include/libdng.h src/libdng.c src/dng.h src/mode.c src/repack.c src/repack.h)
+add_library(libdng SHARED include/libdng.h src/libdng.c src/dng.h src/mode.c src/repack.c src/repack.h src/dcp.c)
 
 set_target_properties(libdng PROPERTIES
         VERSION ${LIBRARY_VERSION_STRING}

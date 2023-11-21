@@ -30,6 +30,9 @@ lib_src = [
     'src/dng.h',
     'src/mode.c',
     'src/mode.h',
+    'src/dcp.c',
+    'src/repack.c',
+    'src/repack.h',
 ]
 
 add_project_arguments(['-Wno-multichar'], language: 'c')

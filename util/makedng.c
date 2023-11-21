@@ -9,7 +9,7 @@
 void
 usage(char *name)
 {
-	fprintf(stderr, "Usage: %s -w width -h height srcfile dstfile\n", name);
+	fprintf(stderr, "Usage: %s -w width -h height -p fmt srcfile dstfile\n", name);
 	fprintf(stderr, "Convert raw sensor data to DNG\n\n");
 	fprintf(stderr, "Arguments:\n");
 	fprintf(stderr, "  -w width       Source data width\n");
@@ -18,6 +18,7 @@ usage(char *name)
 	fprintf(stderr, "  -m make,model  Make and model, comma seperated\n");
 	fprintf(stderr, "  -s software    Software name\n");
 	fprintf(stderr, "  -o orientation Orientation number [0-9]\n");
+	fprintf(stderr, "  -c dcp         Append calibration data from .dcp file\n");
 }
 
 int
@@ -36,9 +37,10 @@ main(int argc, char *argv[])
 	char *pixelfmt = NULL;
 	char *model = NULL;
 	char *software = NULL;
+	char *calibration = NULL;
 	uint16_t orientation = 0;
 
-	while ((c = getopt(argc, argv, "w:h:p:o:m:s:")) != -1) {
+	while ((c = getopt(argc, argv, "w:h:p:o:m:s:c:")) != -1) {
 		switch (c) {
 			case 'w':
 				val = strtol(optarg, &end, 10);
@@ -64,6 +66,9 @@ main(int argc, char *argv[])
 				break;
 			case 's':
 				software = optarg;
+				break;
+			case 'c':
+				calibration = optarg;
 				break;
 			case '?':
 				if (optopt == 'd' || optopt == 'l') {
@@ -121,6 +126,10 @@ main(int argc, char *argv[])
 
 	if (orientation > 0) {
 		libdng_set_orientation(&info, orientation);
+	}
+
+	if (calibration != NULL) {
+		libdng_load_calibration_file(&info, calibration);
 	}
 
 	printf("Reading %s...\n", argv[optind]);

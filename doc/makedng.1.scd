@@ -34,6 +34,9 @@ metadata to correctly render the file.
 	Set the orientation of the image data as a number from 1-8 from the DNG
 	specification.
 
+*-c dcp-file*
+	Load a DCP calibration file and append the color profile to the final DNG.
+
 # PIXEL FORMATS
 
 The pixel format argument accepts the following values:
