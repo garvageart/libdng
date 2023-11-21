@@ -1,0 +1,8 @@
+build:
+  image: alpine:edge
+  before_script:
+    - apk add --no-cache build-base meson samurai tiff-dev linux-headers scdoc
+  script:
+    - meson build --buildtype release --werror
+    - ninja -C build
+    - cd build && meson test --no-rebuild

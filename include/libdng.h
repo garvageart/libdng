@@ -4,6 +4,7 @@
 #include <limits.h>
 #include <time.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 #define EXPORT __attribute__((__visibility__("default")))
 

@@ -36,6 +36,7 @@ lib_src = [
 ]
 
 add_project_arguments(['-Wno-multichar'], language: 'c')
+add_project_arguments('-D_GNU_SOURCE', language: 'c')
 
 libdng = shared_library('dng', lib_src,
     version: libdng_so_version,
@@ -58,11 +59,13 @@ makedng = executable('makedng', 'util/makedng.c',
 )
 
 test_dng_validate = find_program('tests/test_dng_validate.sh')
-dng_validate = find_program('dng_validate')
-test('dng_validate', test_dng_validate,
-    args: [makedng.full_path()],
-    suite: 'adobe',
-)
+dng_validate = find_program('dng_validate', required: false)
+if dng_validate.found()
+    test('dng_validate', test_dng_validate,
+        args: [makedng.full_path()],
+        suite: 'adobe',
+    )
+endif
 
 scdoc = dependency('scdoc', required: get_option('man-pages'), version: '>= 1.9.7', native: true)
 if scdoc.found()

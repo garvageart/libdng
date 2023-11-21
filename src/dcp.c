@@ -77,7 +77,7 @@ libdng_load_calibration_file(libdng_info *dng, const char *path)
 	for (int i = 0; i < tag_count; i++) {
 		int tag_offset = ifd0 + 2 + (i * 12);
 		unsigned int tag = get_int16(buffer, tag_offset + 0);
-		unsigned int type = get_int16(buffer, tag_offset + 2);
+		// unsigned int type = get_int16(buffer, tag_offset + 2);
 		unsigned int count = get_int32(buffer, tag_offset + 4);
 		unsigned int offset = get_int32(buffer, tag_offset + 8);
 
