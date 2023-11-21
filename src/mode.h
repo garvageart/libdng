@@ -5,7 +5,7 @@
 
 #define CFA_NONE 0
 #define CFA_BGGR '\002\001\001\000'
-#define CFA_GBRG '\001\002\001\000'
+#define CFA_GBRG '\001\002\000\001'
 #define CFA_GRBG '\001\000\002\001'
 #define CFA_RGGB '\000\001\001\002'
 

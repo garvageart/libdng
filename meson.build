@@ -67,6 +67,8 @@ if dng_validate.found()
     )
 endif
 
+subdir('tests')
+
 scdoc = dependency('scdoc', required: get_option('man-pages'), version: '>= 1.9.7', native: true)
 if scdoc.found()
     man_pages = ['doc/makedng.1.scd']
