@@ -21,6 +21,7 @@ typedef struct {
 		float neutral[3];
 		float analogbalance[3];
 		uint8_t cfapattern[4];
+		uint32_t whitelevel;
 
 		// Calibration data
 		float color_matrix_1[9];

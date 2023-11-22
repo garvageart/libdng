@@ -69,6 +69,7 @@ libdng_set_mode_from_index(libdng_info *dng, int index)
 	dng->cfapattern[3] = (cfa >> 0) & 0xFF;
 	dng->needs_repack = dng_mode_needs_repack(index);
 	dng->bit_depth = dng_bitdepth_from_mode(index);
+	dng->whitelevel = (1 << dng->bit_depth) - 1;
 	return 1;
 }
 
@@ -268,8 +269,9 @@ libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned in
 	TIFFSetField(tif, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
 	TIFFSetField(tif, TIFFTAG_SAMPLEFORMAT, SAMPLEFORMAT_UINT);
 	TIFFSetField(tif, TIFFTAG_CFAREPEATPATTERNDIM, 2, dng->bayer_pattern_dimensions);
-	TIFFSetField(tif, TIFFTAG_BITSPERSAMPLE, 8);
+	TIFFSetField(tif, TIFFTAG_BITSPERSAMPLE, dng->bit_depth);
 	TIFFSetField(tif, DNGTAG_CFAPATTERN, 4, dng->cfapattern);
+	TIFFSetField(tif, DNGTAG_WHITELEVEL, 1, &dng->whitelevel);
 
 	unsigned int stride = width;
 	for (int row = 0; row < height; row++) {
