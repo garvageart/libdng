@@ -49,6 +49,14 @@ libdng_new(libdng_info *dng)
 	dng->cfapattern[1] = 1;
 	dng->cfapattern[2] = 1;
 	dng->cfapattern[3] = 2;
+
+	dng->neutral[0] = 1.0f;
+	dng->neutral[1] = 1.0f;
+	dng->neutral[2] = 1.0f;
+
+	dng->analogbalance[0] = 1.0f;
+	dng->analogbalance[1] = 1.0f;
+	dng->analogbalance[2] = 1.0f;
 }
 
 int
@@ -151,6 +159,30 @@ libdng_set_orientation(libdng_info *dng, uint16_t orientation)
 }
 
 int
+libdng_set_neutral(libdng_info *dng, float red, float green, float blue)
+{
+	if (dng == NULL)
+		return 0;
+
+	dng->neutral[0] = red;
+	dng->neutral[1] = green;
+	dng->neutral[2] = blue;
+	return 1;
+}
+
+int
+libdng_set_analog_balance(libdng_info *dng, float red, float green, float blue)
+{
+	if (dng == NULL)
+		return 0;
+
+	dng->analogbalance[0] = red;
+	dng->analogbalance[1] = green;
+	dng->analogbalance[2] = blue;
+	return 1;
+}
+
+int
 libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data,
 	size_t length)
 {
@@ -188,6 +220,7 @@ libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned in
 	TIFFSetField(tif, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
 	TIFFSetField(tif, DNGTAG_COLOR_MATRIX_1, 9, dng->color_matrix_1);
 	TIFFSetField(tif, DNGTAG_ASSHOTNEUTRAL, 3, dng->neutral);
+	TIFFSetField(tif, DNGTAG_ANALOGBALANCE, 3, dng->analogbalance);
 
 	if (dng->camera_make != NULL)
 		TIFFSetField(tif, TIFFTAG_MAKE, dng->camera_make);
@@ -276,6 +309,6 @@ libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned in
 	if (dng->needs_repack) {
 		free(raw_frame);
 	}
-	
+
 	return 1;
 }

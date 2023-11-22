@@ -19,6 +19,8 @@ usage(char *name)
 	fprintf(stderr, "  -s software    Software name\n");
 	fprintf(stderr, "  -o orientation Orientation number [0-9]\n");
 	fprintf(stderr, "  -c dcp         Append calibration data from .dcp file\n");
+	fprintf(stderr, "  -n r,g,b       Set the whitepoint as 3 comma seperated floats\n");
+	fprintf(stderr, "  -b r,g,b       Set sensor analog gain as 3 comma seperated floats\n");
 }
 
 int
@@ -39,8 +41,10 @@ main(int argc, char *argv[])
 	char *software = NULL;
 	char *calibration = NULL;
 	uint16_t orientation = 0;
+	float neutral[] = {1.0f, 1.0f, 1.0f};
+	float balance[] = {1.0f, 1.0f, 1.0f};
 
-	while ((c = getopt(argc, argv, "w:h:p:o:m:s:c:")) != -1) {
+	while ((c = getopt(argc, argv, "w:h:p:o:m:s:c:n:b:")) != -1) {
 		switch (c) {
 			case 'w':
 				val = strtol(optarg, &end, 10);
@@ -69,6 +73,20 @@ main(int argc, char *argv[])
 				break;
 			case 'c':
 				calibration = optarg;
+				break;
+			case 'n':
+				val = sscanf(optarg, "%f,%f,%f", &neutral[0], &neutral[1], &neutral[2]);
+				if (val != 3) {
+					fprintf(stderr, "Invalid format for -n\n");
+					return 1;
+				}
+				break;
+			case 'b':
+				val = sscanf(optarg, "%f,%f,%f", &balance[0], &balance[1], &balance[2]);
+				if (val != 3) {
+					fprintf(stderr, "Invalid format for -b\n");
+					return 1;
+				}
 				break;
 			case '?':
 				if (optopt == 'd' || optopt == 'l') {
@@ -131,6 +149,9 @@ main(int argc, char *argv[])
 	if (calibration != NULL) {
 		libdng_load_calibration_file(&info, calibration);
 	}
+
+	libdng_set_neutral(&info, neutral[0], neutral[1], neutral[2]);
+	libdng_set_analog_balance(&info, balance[0], balance[1], balance[2]);
 
 	printf("Reading %s...\n", argv[optind]);
 	FILE *src = fopen(argv[optind], "r");

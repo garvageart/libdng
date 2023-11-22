@@ -19,6 +19,7 @@ typedef struct {
 		// Raw image data
 		uint16_t bayer_pattern_dimensions[2];
 		float neutral[3];
+		float analogbalance[3];
 		uint8_t cfapattern[4];
 
 		// Calibration data
@@ -76,6 +77,12 @@ libdng_set_datetime_now(libdng_info *dng);
 
 EXPORT int
 libdng_set_orientation(libdng_info *dng, uint16_t orientation);
+
+EXPORT int
+libdng_set_neutral(libdng_info *dng, float red, float green, float blue);
+
+EXPORT int
+libdng_set_analog_balance(libdng_info *dng, float red, float green, float blue);
 
 EXPORT int
 libdng_load_calibration_file(libdng_info *dng, const char *path);
