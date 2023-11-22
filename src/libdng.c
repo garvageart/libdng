@@ -184,6 +184,19 @@ libdng_set_analog_balance(libdng_info *dng, float red, float green, float blue)
 }
 
 int
+libdng_set_exposure_program(libdng_info *dng, uint16_t mode)
+{
+	if (dng == NULL)
+		return 0;
+
+	if (mode > 8)
+		return 0;
+
+	dng->exposure_program = mode;
+	return 1;
+}
+
+int
 libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data,
 	size_t length)
 {
@@ -292,6 +305,8 @@ libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned in
 		}
 		TIFFSetField(tif, EXIFTAG_DATETIMEDIGITIZED, datetime);
 	}
+
+	TIFFSetField(tif, EXIFTAG_EXPOSUREPROGRAM, dng->exposure_program);
 
 	uint64_t exif_offset = 0;
 	if (!TIFFWriteCustomDirectory(tif, &exif_offset)) {

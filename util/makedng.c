@@ -21,6 +21,7 @@ usage(char *name)
 	fprintf(stderr, "  -c dcp         Append calibration data from .dcp file\n");
 	fprintf(stderr, "  -n r,g,b       Set the whitepoint as 3 comma seperated floats\n");
 	fprintf(stderr, "  -b r,g,b       Set sensor analog gain as 3 comma seperated floats\n");
+	fprintf(stderr, "  -e program     Set the exposure program in EXIF, 0-8\n");
 }
 
 int
@@ -43,8 +44,9 @@ main(int argc, char *argv[])
 	uint16_t orientation = 0;
 	float neutral[] = {1.0f, 1.0f, 1.0f};
 	float balance[] = {1.0f, 1.0f, 1.0f};
+	uint16_t exposure_program = 0;
 
-	while ((c = getopt(argc, argv, "w:h:p:o:m:s:c:n:b:")) != -1) {
+	while ((c = getopt(argc, argv, "w:h:p:o:m:s:c:n:b:e:")) != -1) {
 		switch (c) {
 			case 'w':
 				val = strtol(optarg, &end, 10);
@@ -87,6 +89,10 @@ main(int argc, char *argv[])
 					fprintf(stderr, "Invalid format for -b\n");
 					return 1;
 				}
+				break;
+			case 'e':
+				val = strtol(optarg, &end, 10);
+				exposure_program = (uint16_t) val;
 				break;
 			case '?':
 				if (optopt == 'd' || optopt == 'l') {
@@ -152,6 +158,7 @@ main(int argc, char *argv[])
 
 	libdng_set_neutral(&info, neutral[0], neutral[1], neutral[2]);
 	libdng_set_analog_balance(&info, balance[0], balance[1], balance[2]);
+	libdng_set_exposure_program(&info, exposure_program);
 
 	printf("Reading %s...\n", argv[optind]);
 	FILE *src = fopen(argv[optind], "r");

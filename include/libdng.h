@@ -15,6 +15,7 @@ typedef struct {
 		char *software;
 		uint16_t orientation;
 		struct tm datetime;
+		uint16_t exposure_program;
 
 		// Raw image data
 		uint16_t bayer_pattern_dimensions[2];
@@ -48,6 +49,16 @@ typedef struct {
 #define LIBDNG_ORIENTATION_RIGHTTOP 6
 #define LIBDNG_ORIENTATION_RIGHTBOT 7
 #define LIBDNG_ORIENTATION_LEFTBOT 8
+
+#define LIBDNG_EXPOSUREPROGRAM_UNDEFINED 0
+#define LIBDNG_EXPOSUREPROGRAM_MANUAL 1
+#define LIBDNG_EXPOSUREPROGRAM_NORMAL 2
+#define LIBDNG_EXPOSUREPROGRAM_APERTURE_PRIORITY 3
+#define LIBDNG_EXPOSUREPROGRAM_SHUTTER_PRIORITY 4
+#define LIBDNG_EXPOSUREPROGRAM_CREATIVE 5
+#define LIBDNG_EXPOSUREPROGRAM_ACTION 6
+#define LIBDNG_EXPOSUREPROGRAM_PORTRAIT 7
+#define LIBDNG_EXPOSUREPROGRAM_LANDSCAPE 8
 
 EXPORT int
 libdng_init();
@@ -87,6 +98,9 @@ libdng_set_analog_balance(libdng_info *dng, float red, float green, float blue);
 
 EXPORT int
 libdng_load_calibration_file(libdng_info *dng, const char *path);
+
+EXPORT int
+libdng_set_exposure_program(libdng_info *dng, uint16_t mode);
 
 EXPORT int
 libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data,

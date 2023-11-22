@@ -8,7 +8,7 @@ makedng - pack raw sensor data into a dng file with metadata
 
 makedng [OPTIONS] input-file output-file
 
-OPTIONS := { -w width | -h height | -p pixfmt | -m make,model | -s software | -o orientation }
+OPTIONS := { -w width | -h height | -p pixfmt | -m make,model | -s software | -o orientation | -n r,g,b | -b r,g,b | -e program }
 
 # DESCRIPTION
 
@@ -36,6 +36,15 @@ metadata to correctly render the file.
 
 *-c dcp-file*
 	Load a DCP calibration file and append the color profile to the final DNG.
+
+*-n red,green,blue*
+	Set the neutral whitepoint for the picture as the 3 floating point gain values.
+
+*-b red,green,blue*
+	Set the analog sensor gain for the three color channels as three comma seperated floats.
+
+*-e program*
+	Set the exposure program in the EXIF data using one of the program numbers from the DNG spec.
 
 # PIXEL FORMATS
 
@@ -76,3 +85,17 @@ pBCC, SBGGR12P: BG,GR bayer pixel data
 GR16, SGRBG16: GR,BG bayer pixel data++
 GB16, SGBRG16: GB,RG bayer pixel data++
 BYR2, SBGGR16: BG,GR bayer pixel data
+
+# EXPOSURE PROGRAMS
+
+The defined exposure programs in the DNG specification are:
+
+- 0: Undefined exposure program (default)
+- 1: Full manual program
+- 2: Full auto program
+- 3: Aperture priority
+- 4: Shutter priority
+- 5: Creative program
+- 6: Action program (fast shutter)
+- 7: Portrait program (Large aperture)
+- 8: Landscape program (Small aperture)
