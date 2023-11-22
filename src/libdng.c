@@ -163,7 +163,7 @@ libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned in
 
 	TIFF *tif = TIFFOpen(path, "w");
 	if (!tif) {
-		return -1;
+		return 0;
 	}
 	libdng_set_datetime_now(dng);
 
@@ -223,7 +223,7 @@ libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned in
 	}
 
 	if (!TIFFWriteDirectory(tif)) {
-		return -1;
+		return 0;
 	}
 
 	// Define the raw data IFD
@@ -243,12 +243,12 @@ libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned in
 		TIFFWriteScanline(tif, (void *) raw_frame + (row * stride), row, 0);
 	}
 	if (!TIFFWriteDirectory(tif)) {
-		return -1;
+		return 0;
 	}
 
 	if (TIFFCreateEXIFDirectory(tif) != 0) {
 		fprintf(stderr, "Could not create EXIF\n");
-		return -1;
+		return 0;
 	}
 
 	if (dng->datetime.tm_year) {
@@ -261,7 +261,7 @@ libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned in
 	uint64_t exif_offset = 0;
 	if (!TIFFWriteCustomDirectory(tif, &exif_offset)) {
 		fprintf(stderr, "Can't write EXIF\n");
-		return -1;
+		return 0;
 	}
 	TIFFFreeDirectory(tif);
 
@@ -277,5 +277,5 @@ libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned in
 		free(raw_frame);
 	}
 	
-	return 0;
+	return 1;
 }

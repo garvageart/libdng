@@ -146,7 +146,7 @@ main(int argc, char *argv[])
 	fclose(src);
 
 	printf("Writing %s...\n", argv[optind + 1]);
-	if (libdng_write(&info, argv[optind + 1], width, height, data, src_size) < 0) {
+	if (!libdng_write(&info, argv[optind + 1], width, height, data, src_size)) {
 		fprintf(stderr, "Could not write DNG\n");
 		return 1;
 	}
