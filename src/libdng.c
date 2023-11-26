@@ -78,7 +78,8 @@ libdng_set_mode_from_pixfmt(libdng_info *dng, uint32_t pixfmt)
 {
 	int index = dng_mode_from_pixfmt(pixfmt);
 	if (index == 0) {
-		fprintf(stderr, "Invalid pixfmt '%d'\n", pixfmt);
+		fprintf(stderr, "libdng: Invalid pixfmt '%c%c%c%c'\n", pixfmt & 0xFF, pixfmt >> 8 & 0xFF, pixfmt >> 16 & 0xFF,
+			pixfmt >> 24 & 0xFF);
 		return 0;
 	}
 	return libdng_set_mode_from_index(dng, index);
