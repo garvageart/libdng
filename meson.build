@@ -71,7 +71,7 @@ subdir('tests')
 
 scdoc = dependency('scdoc', required: get_option('man-pages'), version: '>= 1.9.7', native: true)
 if scdoc.found()
-    man_pages = ['doc/makedng.1.scd']
+    man_pages = ['man/makedng.1.scd']
     foreach src : man_pages
 		topic = src.split('/')[1].split('.')[0]
 		section = src.split('.')[1]
