@@ -14,3 +14,4 @@ files that are following the DNG 1.4 specification.
    :caption: Contents:
 
    overview
+   api
