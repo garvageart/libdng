@@ -270,3 +270,164 @@ Affected tags:
 - TIFFTAG_DATETIME
 - EXIFTAG_DATETIMEORIGINAL
 - EXIFTAG_DATETIMEDIGITIZED
+
+
+.. _set_neutral:
+
+int libdng_set_neutral(libdng_info \*dng, float r, float g, float b)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Set the whitebalance of the picture. The neutral whitepoint gains are the RGB
+gains that will be applied on top of the raw debayered data to get a properly
+whitebalanced picture. If the camera already uses whitebalance gain in the
+hardware then those should be stored in the analogbalance metadata instead and
+set using the :ref:`libdng_set_analog_balance <set_analog_balance>` function.
+
+In most cases the gain for the green channel will be 1.0f and the red and blue
+gains will be adjusted around that. It is important to have the right
+analogbalance and neutral whitebalance in the metadata to make the DNG processing
+software create the right color matrix from the two provided whitepoints in the
+metadata.
+
+The neutral whitepoint defaults to 1.0, 1.0, 1.0.
+
+.. code-block:: c
+
+   libdng_info dng = {0};
+   libdng_new(&dng);
+
+   libdng_set_neutral(&dng, 1.2f, 1.0f, 1.6f);
+
+   libdng_free(&dng);
+
+Affected tags:
+
+- TIFFTAG_ASSHOTNEUTRAL
+
+
+.. _set_analog_balance:
+
+int libdng_set_analog_balance(libdng_info \*dng, float r, float g, float b)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Set the ADC gain used to whitebalance the sensor readings before they were
+digitized in the RAW file. This will be used to normalize the raw data again
+before using the rest of the color pipeline. Most sensors will not whitebalance
+the raw bayer data but some sensors in 8-bit CFA output might do this to optimize
+the use of the available bits a bit more.
+
+For the whitebalance after the capture of the raw data the
+:ref:`libdng_set_neutral <set_neutral>` function should be used to store the
+measured whitebalance.
+
+.. code-block:: c
+
+   libdng_info dng = {0};
+   libdng_new(&dng);
+
+   libdng_set_analog_balance(&dng, 1.2f, 1.0f, 1.6f);
+
+   libdng_free(&dng);
+
+Affected tags:
+
+- TIFFTAG_ANALOGBALANCE
+
+
+.. _load_calibration_file:
+
+int libdng_load_calibration_file(libdng_info \*dng, const char \*path)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Load the calibration metadata from another TIFF file and append it to the final
+DNG output. This is used to load all the calibration data from a :code:`.dcp`
+file which is a "DNG Color Profile". These files are generated using profiling
+software and contain the colormatrices, calibration curves and LUTs to transform
+the raw data into a calibrated picture. The exact list of TIFF tags that are
+loaded with this command is the list below:
+
+.. code-block:: c
+
+   libdng_info dng = {0};
+   libdng_new(&dng);
+
+   libdng_load_calibration_file(&dng, "/tmp/d3300.dcp");
+
+   libdng_free(&dng);
+
+Affected tags:
+
+- TIFFTAG_COLOR_MATRIX_1
+- TIFFTAG_COLOR_MATRIX_2
+- TIFFTAG_FORWARD_MATRIX_1
+- TIFFTAG_FORWARD_MATRIX_2
+- TIFFTAG_CALIBRATION_ILLUMINANT_1
+- TIFFTAG_CALIBRATION_ILLUMINANT_2
+- TIFFTAG_PROFILE_TONE_CURVE
+- TIFFTAG_PROFILE_HUE_SAT_MAP_DIMS
+- TIFFTAG_PROFILE_HUE_SAT_MAP_DATA_1
+- TIFFTAG_PROFILE_HUE_SAT_MAP_DATA_2
+
+
+.. _set_exposure_program:
+
+int libdng_set_exposure_program(libdng_info \*dng, uint16_t mode)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Sets the exposure program used to take the picture. The intended values here
+are the :code:`LIBDNG_EXPOSUREPROGRAM_` constants which maps to the numbers in
+the DNG specification for the exposure programs:
+
+.. code-block:: c
+
+   #define LIBDNG_EXPOSUREPROGRAM_UNDEFINED 0
+   #define LIBDNG_EXPOSUREPROGRAM_MANUAL 1
+   #define LIBDNG_EXPOSUREPROGRAM_NORMAL 2
+   #define LIBDNG_EXPOSUREPROGRAM_APERTURE_PRIORITY 3
+   #define LIBDNG_EXPOSUREPROGRAM_SHUTTER_PRIORITY 4
+   #define LIBDNG_EXPOSUREPROGRAM_CREATIVE 5
+   #define LIBDNG_EXPOSUREPROGRAM_ACTION 6
+   #define LIBDNG_EXPOSUREPROGRAM_PORTRAIT 7
+   #define LIBDNG_EXPOSUREPROGRAM_LANDSCAPE 8
+
+example use:
+
+.. code-block:: c
+
+   libdng_info dng = {0};
+   libdng_new(&dng);
+
+   libdng_set_exposure_program(&dng, LIBDNG_EXPOSUREPROGRAM_APERTURE_PRIORITY);
+
+   libdng_free(&dng);
+
+Affected tags:
+
+- EXIFTAG_EXPOSUREPROGRAM
+
+
+.. _write:
+
+int libdng_write(libdng_info \*dng, const char \*path, unsigned int width, unsigned int height, const uint8_t \*data, size_t length)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This is the function that takes the raw data and stores it into a DNG file together with all the metadata that has
+been defined before this.
+
+
+.. code-block:: c
+
+   // This size is only valid for 8-bit pictures.
+   size_t src_size = 1280 * 720;
+   uint8_t *data = malloc(src_size);
+   // At this point the raw data should be _in_ data.
+
+   libdng_info dng = {0};
+   libdng_new(&dng);
+   if(!libdng_write(&dng, "/tmp/out.dng", 1280, 720, data, src_size)) {
+     fprintf(stderr, "Could not write DNG\n");
+     // handle errors here
+   }
+
+   free(data);
+   libdng_free(&dng);
