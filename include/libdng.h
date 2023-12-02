@@ -106,4 +106,9 @@ EXPORT int
 libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data,
 	size_t length);
 
+EXPORT int
+libdng_write_with_thumbnail(libdng_info *dng, const char *path, unsigned int width, unsigned int height,
+	const uint8_t *data,
+	size_t length, unsigned int thumb_width, unsigned int thumb_height, const uint8_t *thumb, size_t thumb_length);
+
 #endif //LIBDNG_LIBRARY_H

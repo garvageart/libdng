@@ -201,6 +201,14 @@ int
 libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data,
 	size_t length)
 {
+	return libdng_write_with_thumbnail(dng, path, width, height, data, length, 0, 0, NULL, 0);
+}
+
+int
+libdng_write_with_thumbnail(libdng_info *dng, const char *path, unsigned int width, unsigned int height,
+	const uint8_t *data, size_t length, unsigned int thumb_width, unsigned int thumb_height, const uint8_t *thumb,
+	size_t thumb_length)
+{
 
 	uint8_t *raw_frame = (uint8_t *) data;
 	if (dng->needs_repack) {
@@ -221,12 +229,18 @@ libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned in
 
 	uint64_t ifd0_offsets[] = {0L};
 
+	// When not supplying a thumbnail generate a black thumb with 1/16th of the
+	// resolution of the full picture
+	if (thumb_length == 0) {
+		thumb_width = width >> 4;
+		thumb_height = height >> 4;
+	}
 
 	// First IFD describes the thumbnail and contains most of the metadata
 	// Tags are in numerical order
 	TIFFSetField(tif, TIFFTAG_SUBFILETYPE, DNG_SUBFILETYPE_THUMBNAIL);
-	TIFFSetField(tif, TIFFTAG_IMAGEWIDTH, width >> 4);
-	TIFFSetField(tif, TIFFTAG_IMAGELENGTH, height >> 4);
+	TIFFSetField(tif, TIFFTAG_IMAGEWIDTH, thumb_width);
+	TIFFSetField(tif, TIFFTAG_IMAGELENGTH, thumb_height);
 	TIFFSetField(tif, TIFFTAG_BITSPERSAMPLE, 8);
 	TIFFSetField(tif, TIFFTAG_COMPRESSION, COMPRESSION_NONE);
 	TIFFSetField(tif, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB);
@@ -261,13 +275,19 @@ libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned in
 	TIFFSetField(tif, DNGTAG_UNIQUECAMERAMODEL, ucm);
 	TIFFSetField(tif, TIFFTAG_SUBIFD, 1, &ifd0_offsets);
 
-	// Write black thumbnail, only windows uses this
-	{
-		unsigned char *buf = (unsigned char *) calloc(1, (width >> 4) * 3);
-		for (int row = 0; row < (height >> 4); row++) {
+	if (thumb_length == 0) {
+		// Generate a single black scanline and write it
+		unsigned char *buf = (unsigned char *) calloc(1, thumb_width * 3);
+		for (int row = 0; row < thumb_height; row++) {
 			TIFFWriteScanline(tif, buf, row, 0);
 		}
 		free(buf);
+	} else {
+		// Write the supplied thumbnail
+		unsigned int t_stride = thumb_width;
+		for (int row = 0; row < thumb_height; row++) {
+			TIFFWriteScanline(tif, (void *) thumb + (row * t_stride), row, 0);
+		}
 	}
 
 	if (!TIFFWriteDirectory(tif)) {
