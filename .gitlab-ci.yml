@@ -30,3 +30,5 @@ pages:
     paths:
       - public
   environment: production
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
