@@ -60,6 +60,28 @@ typedef struct {
 #define LIBDNG_EXPOSUREPROGRAM_PORTRAIT 7
 #define LIBDNG_EXPOSUREPROGRAM_LANDSCAPE 8
 
+#define LIBDNG_ILLUMINANT_UNKNOWN 0
+#define LIBDNG_ILLUMINANT_DAYLIGHT 1
+#define LIBDNG_ILLUMINANT_FLUORESCENT 2
+#define LIBDNG_ILLUMINANT_TUNGSTEN 3
+#define LIBDNG_ILLUMINANT_FLASH 4
+#define LIBDNG_ILLUMINANT_FINE_WEATHER 9
+#define LIBDNG_ILLUMINANT_CLOUDY_WEATHER 10
+#define LIBDNG_ILLUMINANT_SHADE 11
+#define LIBDNG_ILLUMINANT_DAYLIGHT_FLUORESCENT 12
+#define LIBDNG_ILLUMINANT_DAY_WHITE_FLUORESCENT 13
+#define LIBDNG_ILLUMINANT_COOL_WHITE_FLUORESCENT 14
+#define LIBDNG_ILLUMINANT_WHITE_FLUORESCENT 15
+#define LIBDNG_ILLUMINANT_STANDARD_A 17
+#define LIBDNG_ILLUMINANT_STANDARD_B 18
+#define LIBDNG_ILLUMINANT_STANDARD_C 19
+#define LIBDNG_ILLUMINANT_D55 20
+#define LIBDNG_ILLUMINANT_D65 21
+#define LIBDNG_ILLUMINANT_D75 22
+#define LIBDNG_ILLUMINANT_D50 23
+#define LIBDNG_ILLUMINANT_ISO_TUNGSTEN 24
+#define LIBDNG_ILLUMINANT_OTHER 255
+
 EXPORT int
 libdng_init();
 
@@ -110,5 +132,12 @@ EXPORT int
 libdng_write_with_thumbnail(libdng_info *dng, const char *path, unsigned int width, unsigned int height,
 	const uint8_t *data,
 	size_t length, unsigned int thumb_width, unsigned int thumb_height, const uint8_t *thumb, size_t thumb_length);
+
+EXPORT int
+libdng_read(libdng_info *dng, const char *path);
+
+EXPORT int
+libdng_read_image(libdng_info *dng, const char *path, uint8_t index, uint8_t **data, size_t *length, uint32_t *width,
+	uint32_t *height);
 
 #endif //LIBDNG_LIBRARY_H

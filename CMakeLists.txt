@@ -19,6 +19,10 @@ add_executable(makedng util/makedng.c)
 target_include_directories(makedng PUBLIC include)
 target_link_libraries(makedng PUBLIC libdng)
 
+add_executable(dngmerge util/dngmerge.c)
+target_include_directories(dngmerge PUBLIC include)
+target_link_libraries(dngmerge PUBLIC libdng)
+
 find_program(BASH bash)
 enable_testing()
 

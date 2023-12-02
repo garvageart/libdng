@@ -10,5 +10,11 @@ add_executable(check_dng check_dng.c greatest.h)
 target_include_directories(check_dng PUBLIC include)
 target_link_libraries(check_dng PUBLIC libdng check)
 
+add_executable(check_dcp check_dcp.c greatest.h)
+target_include_directories(check_dcp PUBLIC include)
+target_link_libraries(check_dcp PUBLIC libdng check)
+configure_file(fixture/pinephone.dcp ${CMAKE_CURRENT_BINARY_DIR}/fixture/pinephone.dcp COPYONLY)
+
 add_test(NAME check_mode COMMAND check_mode)
 add_test(NAME check_dng COMMAND check_dng)
+add_test(NAME check_dcp COMMAND check_dcp)

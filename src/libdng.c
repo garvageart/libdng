@@ -350,3 +350,135 @@ libdng_write_with_thumbnail(libdng_info *dng, const char *path, unsigned int wid
 
 	return 1;
 }
+
+int
+libdng_read(libdng_info *dng, const char *path)
+{
+	TIFF *tif = TIFFOpen(path, "r");
+	if (!tif) {
+		return 0;
+	}
+	unsigned short count;
+	char *cvalues;
+	float *fvalues;
+	uint8_t *u8values;
+	uint32_t *u32values;
+
+	// Reading the "main" image which is the thumbnail
+	TIFFGetField(tif, TIFFTAG_ORIENTATION, &dng->orientation);
+	if (TIFFGetField(tif, TIFFTAG_MAKE, &cvalues) == 1) {
+		dng->camera_make = strdup(cvalues);
+	}
+	if (TIFFGetField(tif, TIFFTAG_MODEL, &cvalues) == 1) {
+		dng->camera_model = strdup(cvalues);
+	}
+	if (TIFFGetField(tif, TIFFTAG_UNIQUECAMERAMODEL, &dng->unique_camera_model) == 1) {
+		dng->unique_camera_model = strdup(cvalues);
+	}
+	if (TIFFGetField(tif, TIFFTAG_SOFTWARE, &cvalues) == 1) {
+		dng->software = strdup(cvalues);
+	}
+
+	if (TIFFGetField(tif, DNGTAG_ASSHOTNEUTRAL, &count, &fvalues) == 1) {
+		for (int i = 0; i < count; i++) {
+			dng->neutral[i] = fvalues[i];
+		}
+	}
+	if (TIFFGetField(tif, DNGTAG_ANALOGBALANCE, &count, &fvalues) == 1) {
+		for (int i = 0; i < count; i++) {
+			dng->analogbalance[i] = fvalues[i];
+		}
+	}
+
+	if (TIFFGetField(tif, DNGTAG_COLOR_MATRIX_1, &count, &fvalues) == 1) {
+		for (int i = 0; i < count; i++) {
+			dng->color_matrix_1[i] = fvalues[i];
+		}
+	}
+	if (TIFFGetField(tif, DNGTAG_COLOR_MATRIX_2, &count, &fvalues) == 1) {
+		for (int i = 0; i < count; i++) {
+			dng->color_matrix_2[i] = fvalues[i];
+		}
+	}
+	if (TIFFGetField(tif, DNGTAG_FORWARDMATRIX1, &count, &fvalues) == 1) {
+		for (int i = 0; i < count; i++) {
+			dng->forward_matrix_1[i] = fvalues[i];
+		}
+	}
+	if (TIFFGetField(tif, DNGTAG_FORWARDMATRIX2, &count, &fvalues) == 1) {
+		for (int i = 0; i < count; i++) {
+			dng->forward_matrix_2[i] = fvalues[i];
+		}
+	}
+
+	int subifd_count = 0;
+	void *ptr;
+	toff_t subifd_offsets[2];
+	TIFFGetField(tif, TIFFTAG_SUBIFD, &subifd_count, &ptr);
+	memcpy(subifd_offsets, ptr, subifd_count * sizeof(subifd_offsets[0]));
+	TIFFSetSubDirectory(tif, subifd_offsets[0]);
+
+	TIFFGetField(tif, TIFFTAG_BITSPERSAMPLE, &dng->bit_depth);
+
+	if (TIFFGetField(tif, DNGTAG_WHITELEVEL, &count, &u32values) == 1) {
+		dng->whitelevel = u32values[0];
+	} else {
+		dng->whitelevel = (1 << dng->bit_depth) - 1;
+	}
+	if (TIFFGetField(tif, DNGTAG_CFAPATTERN, &count, &u8values) == 1) {
+		if (count > 4) {
+			fprintf(stderr, "overflow in CFAPATTERN length %d > 4\n", count);
+			return 0;
+		}
+		for (int i = 0; i < count; i++) {
+			dng->cfapattern[i] = u8values[i];
+		}
+	}
+
+	TIFFClose(tif);
+	return 1;
+}
+
+int
+libdng_read_image(libdng_info *dng, const char *path, uint8_t index, uint8_t **data, size_t *length, uint32_t *width,
+	uint32_t *height)
+{
+	TIFF *tif = TIFFOpen(path, "r");
+	if (!tif) {
+		return 0;
+	}
+
+	if (index == 1) {
+		int subifd_count = 0;
+		void *ptr;
+		toff_t subifd_offsets[2];
+		TIFFGetField(tif, TIFFTAG_SUBIFD, &subifd_count, &ptr);
+		memcpy(subifd_offsets, ptr, subifd_count * sizeof(subifd_offsets[0]));
+		TIFFSetSubDirectory(tif, subifd_offsets[0]);
+	}
+
+	uint32_t samples_per_pixel;
+	uint32_t bits_per_sample;
+
+	TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, width);
+	TIFFGetField(tif, TIFFTAG_IMAGELENGTH, height);
+	TIFFGetField(tif, TIFFTAG_SAMPLESPERPIXEL, &samples_per_pixel);
+	TIFFGetField(tif, TIFFTAG_BITSPERSAMPLE, &bits_per_sample);
+
+	tsize_t scanline_size = TIFFScanlineSize(tif);
+
+	float bytes_per_pixel = (float) samples_per_pixel * (float) bits_per_sample / 8.0f;
+	(*length) = (uint32_t) ((float) (*width) * (float) (*height) * bytes_per_pixel);
+	(*data) = malloc(*length);
+	if (*data == NULL) {
+		fprintf(stderr, "Could not allocate memory in libdng_read_image\n");
+		return 0;
+	}
+
+	for (uint32_t y = 0; y < *height; y++) {
+		TIFFReadScanline(tif, (*data) + (y * scanline_size), y, 0);
+	}
+
+	TIFFClose(tif);
+	return 1;
+}
