@@ -318,7 +318,11 @@ libdng_write_with_thumbnail(libdng_info *dng, const char *path, unsigned int wid
 	TIFFSetField(tif, TIFFTAG_SAMPLESPERPIXEL, 1);
 	TIFFSetField(tif, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
 	TIFFSetField(tif, TIFFTAG_SAMPLEFORMAT, SAMPLEFORMAT_UINT);
-	TIFFSetField(tif, TIFFTAG_CFAREPEATPATTERNDIM, 2, dng->bayer_pattern_dimensions);
+#if (TIFFLIB_VERSION > 20230000)
+	TIFFSetField(tif, DNGTAG_CFAREPEATPATTERNDIM, 2, dng->bayer_pattern_dimensions);
+#else
+	TIFFSetField(tif, DNGTAG_CFAREPEATPATTERNDIM, dng->bayer_pattern_dimensions);
+#endif
 	TIFFSetField(tif, TIFFTAG_BITSPERSAMPLE, dng->bit_depth);
 	TIFFSetField(tif, DNGTAG_CFAPATTERN, 4, dng->cfapattern);
 	TIFFSetField(tif, DNGTAG_WHITELEVEL, 1, &dng->whitelevel);
