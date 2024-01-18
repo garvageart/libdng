@@ -25,6 +25,17 @@ check_int_tag(TIFF *im, uint32_t tag, const char *name, int expected)
 		PASS();
 }
 
+static enum greatest_test_res
+check_float_tag(TIFF *im, uint32_t tag, const char *name, float expected)
+{
+	float temp;
+	if (TIFFGetField(im, tag, &temp) != 1) {
+			FAILm(name);
+	}
+		ASSERT_EQ_FMTm(name, expected, temp, "%f");
+		PASS();
+}
+
 
 TEST generate_simple_dng(void)
 {
@@ -34,6 +45,7 @@ TEST generate_simple_dng(void)
 		ASSERT_EQm("Set make", 1, libdng_set_make_model(&info, "Make", "Model"));
 		ASSERT_EQm("Set software", 1, libdng_set_software(&info, "Software"));
 		ASSERT_EQm("Set orientation", 1, libdng_set_orientation(&info, 4));
+		ASSERT_EQm("Set exposuretime", 1, libdng_set_exposure_time(&info, 0.04f));
 	uint8_t *data = malloc(1280 * 720);
 		ASSERT_EQm("Write DNG", 1, libdng_write(&info, "test.dng", 1280, 720, data, 1280 * 720));
 	free(data);
@@ -43,6 +55,11 @@ TEST generate_simple_dng(void)
 	TIFF *im = TIFFOpen("test.dng", "r");
 	if (im == NULL) {
 			FAILm("Could not open result");
+	}
+
+	toff_t exif_offset;
+	if (TIFFGetField(im, TIFFTAG_EXIFIFD, &exif_offset) != 1) {
+			FAILm("Could not find EXIF data");
 	}
 
 	// Check IFD0 with most metadata and the thumbnail image
@@ -71,6 +88,10 @@ TEST generate_simple_dng(void)
 		CHECK_CALL(check_int_tag(im, TIFFTAG_BITSPERSAMPLE, "RAW_BPS", 8));
 		CHECK_CALL(check_int_tag(im, TIFFTAG_SAMPLESPERPIXEL, "RAW_CHANNELS", 1));
 		CHECK_CALL(check_int_tag(im, TIFFTAG_PHOTOMETRIC, "RAW_PHOTOMETRIC", PHOTOMETRIC_CFA));
+
+	// Switch to the EXIF block with the generic picture metadata
+	TIFFReadEXIFDirectory(im, exif_offset);
+		CHECK_CALL(check_float_tag(im, EXIFTAG_EXPOSURETIME, "EXPOSURETIME", 0.04f));
 
 		PASS();
 }

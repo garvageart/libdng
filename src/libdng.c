@@ -57,6 +57,8 @@ libdng_new(libdng_info *dng)
 	dng->analogbalance[0] = 1.0f;
 	dng->analogbalance[1] = 1.0f;
 	dng->analogbalance[2] = 1.0f;
+
+	dng->exposure_time = 0.0f;
 }
 
 int
@@ -198,6 +200,20 @@ libdng_set_exposure_program(libdng_info *dng, uint16_t mode)
 }
 
 int
+libdng_set_exposure_time(libdng_info *dng, float seconds)
+{
+	if (dng == NULL)
+		return 0;
+
+	if (seconds < 0.0f)
+		return 0;
+
+	dng->exposure_time = seconds;
+	return 1;
+}
+
+
+int
 libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data,
 	size_t length)
 {
@@ -328,6 +344,10 @@ libdng_write_with_thumbnail(libdng_info *dng, const char *path, unsigned int wid
 	}
 
 	TIFFSetField(tif, EXIFTAG_EXPOSUREPROGRAM, dng->exposure_program);
+
+	if (dng->exposure_time > 0) {
+		TIFFSetField(tif, EXIFTAG_EXPOSURETIME, dng->exposure_time);
+	}
 
 	uint64_t exif_offset = 0;
 	if (!TIFFWriteCustomDirectory(tif, &exif_offset)) {

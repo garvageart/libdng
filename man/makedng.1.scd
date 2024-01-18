@@ -46,6 +46,9 @@ metadata to correctly render the file.
 *-e program*
 	Set the exposure program in the EXIF data using one of the program numbers from the DNG spec.
 
+*-t seconds*
+	Set the exposure time for the picture in seconds (eg. 0.01 for 1/100)
+
 # PIXEL FORMATS
 
 The pixel format argument accepts the following values:

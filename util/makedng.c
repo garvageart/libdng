@@ -22,6 +22,7 @@ usage(char *name)
 	fprintf(stderr, "  -n r,g,b       Set the whitepoint as 3 comma seperated floats\n");
 	fprintf(stderr, "  -b r,g,b       Set sensor analog gain as 3 comma seperated floats\n");
 	fprintf(stderr, "  -e program     Set the exposure program in EXIF, 0-8\n");
+	fprintf(stderr, "  -t seconds     Set the exposure time in seconds\n");
 }
 
 int
@@ -45,8 +46,9 @@ main(int argc, char *argv[])
 	float neutral[] = {1.0f, 1.0f, 1.0f};
 	float balance[] = {1.0f, 1.0f, 1.0f};
 	uint16_t exposure_program = 0;
+	float exposure_time = 0;
 
-	while ((c = getopt(argc, argv, "w:h:p:o:m:s:c:n:b:e:")) != -1) {
+	while ((c = getopt(argc, argv, "w:h:p:o:m:s:c:n:b:e:t:")) != -1) {
 		switch (c) {
 			case 'w':
 				val = strtol(optarg, &end, 10);
@@ -93,6 +95,9 @@ main(int argc, char *argv[])
 			case 'e':
 				val = strtol(optarg, &end, 10);
 				exposure_program = (uint16_t) val;
+				break;
+			case 't':
+				exposure_time = strtof(optarg, &end);
 				break;
 			case '?':
 				if (optopt == 'd' || optopt == 'l') {
@@ -159,6 +164,9 @@ main(int argc, char *argv[])
 	libdng_set_neutral(&info, neutral[0], neutral[1], neutral[2]);
 	libdng_set_analog_balance(&info, balance[0], balance[1], balance[2]);
 	libdng_set_exposure_program(&info, exposure_program);
+	if (exposure_time > 0) {
+		libdng_set_exposure_time(&info, exposure_time);
+	}
 
 	printf("Reading %s...\n", argv[optind]);
 	FILE *src = fopen(argv[optind], "r");
