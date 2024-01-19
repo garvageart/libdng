@@ -17,7 +17,7 @@ check_str_tag(TIFF *im, uint32_t tag, const char *name, const char *expected)
 static enum greatest_test_res
 check_int_tag(TIFF *im, uint32_t tag, const char *name, int expected)
 {
-	uint32_t temp;
+	uint32_t temp = 0;
 	if (TIFFGetField(im, tag, &temp) != 1) {
 			FAILm(name);
 	}
@@ -47,6 +47,7 @@ TEST generate_simple_dng(void)
 		ASSERT_EQm("Set orientation", 1, libdng_set_orientation(&info, 4));
 		ASSERT_EQm("Set exposuretime", 1, libdng_set_exposure_time(&info, 0.04f));
 		ASSERT_EQm("Set fnumber", 1, libdng_set_fnumber(&info, 2.8f));
+		ASSERT_EQm("Set fnumber", 1, libdng_set_focal_length(&info, 50.0f, 1.5f));
 	uint8_t *data = malloc(1280 * 720);
 		ASSERT_EQm("Write DNG", 1, libdng_write(&info, "test.dng", 1280, 720, data, 1280 * 720));
 	free(data);
@@ -94,7 +95,8 @@ TEST generate_simple_dng(void)
 	TIFFReadEXIFDirectory(im, exif_offset);
 		CHECK_CALL(check_float_tag(im, EXIFTAG_EXPOSURETIME, "EXPOSURETIME", 0.04f));
 		CHECK_CALL(check_float_tag(im, EXIFTAG_FNUMBER, "FNUMBER", 2.8f));
-
+		CHECK_CALL(check_float_tag(im, EXIFTAG_FOCALLENGTH, "FOCALLENGTH", 50.0f));
+		CHECK_CALL(check_int_tag(im, EXIFTAG_FOCALLENGTHIN35MMFILM, "FOCALLENGTHIN35MMFILM", 75));
 		PASS();
 }
 

@@ -19,6 +19,8 @@ typedef struct {
 		float exposure_time;
 		uint32_t iso;
 		float fnumber;
+		float focal_length;
+		float crop_factor;
 
 		// Raw image data
 		uint16_t bayer_pattern_dimensions[2];
@@ -135,6 +137,9 @@ libdng_set_iso(libdng_info *dng, uint32_t isospeed);
 
 EXPORT int
 libdng_set_fnumber(libdng_info *dng, float fnumber);
+
+EXPORT int
+libdng_set_focal_length(libdng_info *dng, float focal_length, float crop_factor);
 
 EXPORT int
 libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data,

@@ -61,6 +61,8 @@ libdng_new(libdng_info *dng)
 	dng->exposure_time = 0.0f;
 	dng->iso = 0;
 	dng->fnumber = 0.0f;
+	dng->crop_factor = 1.0f;
+	dng->focal_length = 0.0f;
 }
 
 int
@@ -238,6 +240,23 @@ libdng_set_fnumber(libdng_info *dng, float fnumber)
 }
 
 int
+libdng_set_focal_length(libdng_info *dng, float focal_length, float crop_factor)
+{
+	if (dng == NULL)
+		return 0;
+
+	if (focal_length < 0.0f)
+		return 0;
+
+	if (crop_factor < 0.0f)
+		return 0;
+
+	dng->focal_length = focal_length;
+	dng->crop_factor = crop_factor;
+	return 1;
+}
+
+int
 libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data,
 	size_t length)
 {
@@ -382,7 +401,12 @@ libdng_write_with_thumbnail(libdng_info *dng, const char *path, unsigned int wid
 	if (dng->fnumber > 0) {
 		TIFFSetField(tif, EXIFTAG_FNUMBER, dng->fnumber);
 	}
-
+	if (dng->focal_length > 0) {
+		TIFFSetField(tif, EXIFTAG_FOCALLENGTH, dng->focal_length);
+		if (dng->crop_factor != 1.0f) {
+			TIFFSetField(tif, EXIFTAG_FOCALLENGTHIN35MMFILM, (uint16_t) (dng->focal_length * dng->crop_factor));
+		}
+	}
 
 	uint64_t exif_offset = 0;
 	if (!TIFFWriteCustomDirectory(tif, &exif_offset)) {

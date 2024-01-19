@@ -55,6 +55,9 @@ metadata to correctly render the file.
 *-f fnumber*
 	Set the aperture size, or f-number of the picture (2.2 for f/2.2)
 
+*-l focal-length,crop-factor* | *-l focal-length*
+	Set the focal length for the lens. If no crop factor for the system is supplied a 35mm full-frame sensor is assumed.
+
 # PIXEL FORMATS
 
 The pixel format argument accepts the following values:

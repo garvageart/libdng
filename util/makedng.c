@@ -51,8 +51,10 @@ main(int argc, char *argv[])
 	float exposure_time = 0;
 	uint32_t iso = 0;
 	float fnumber = 0.0f;
+	float focal_length = 0.0f;
+	float crop_factor = 1.0f;
 
-	while ((c = getopt(argc, argv, "w:h:p:o:m:s:c:n:b:e:t:i:f:")) != -1) {
+	while ((c = getopt(argc, argv, "w:h:p:o:m:s:c:n:b:e:t:i:f:l:")) != -1) {
 		switch (c) {
 			case 'w':
 				val = strtol(optarg, &end, 10);
@@ -109,6 +111,13 @@ main(int argc, char *argv[])
 				break;
 			case 'f':
 				fnumber = strtof(optarg, &end);
+				break;
+			case 'l':
+				val = sscanf(optarg, "%f,%f", &focal_length, &crop_factor);
+				if (val != 2 && val != 1) {
+					fprintf(stderr, "Invalid format for -l. Specify -l $length,$cropfactor or -l $length\n");
+					return 1;
+				}
 				break;
 			case '?':
 				if (optopt == 'd' || optopt == 'l') {
@@ -183,6 +192,9 @@ main(int argc, char *argv[])
 	}
 	if (fnumber > 0) {
 		libdng_set_fnumber(&info, fnumber);
+	}
+	if (focal_length > 0) {
+		libdng_set_focal_length(&info, focal_length, crop_factor);
 	}
 
 	printf("Reading %s...\n", argv[optind]);
