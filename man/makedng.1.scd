@@ -52,6 +52,9 @@ metadata to correctly render the file.
 *-i iso-speed*
 	Set the ISO speed rating for the picture
 
+*-f fnumber*
+	Set the aperture size, or f-number of the picture (2.2 for f/2.2)
+
 # PIXEL FORMATS
 
 The pixel format argument accepts the following values:

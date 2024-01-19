@@ -60,6 +60,7 @@ libdng_new(libdng_info *dng)
 
 	dng->exposure_time = 0.0f;
 	dng->iso = 0;
+	dng->fnumber = 0.0f;
 }
 
 int
@@ -224,6 +225,19 @@ libdng_set_iso(libdng_info *dng, uint32_t isospeed)
 }
 
 int
+libdng_set_fnumber(libdng_info *dng, float fnumber)
+{
+	if (dng == NULL)
+		return 0;
+
+	if (fnumber < 0.0f)
+		return 0;
+
+	dng->fnumber = fnumber;
+	return 1;
+}
+
+int
 libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data,
 	size_t length)
 {
@@ -362,9 +376,13 @@ libdng_write_with_thumbnail(libdng_info *dng, const char *path, unsigned int wid
 	if (dng->exposure_time > 0) {
 		TIFFSetField(tif, EXIFTAG_EXPOSURETIME, dng->exposure_time);
 	}
-	if(dng->iso > 0) {
+	if (dng->iso > 0) {
 		TIFFSetField(tif, EXIFTAG_ISOSPEEDRATINGS, 1, &dng->iso);
 	}
+	if (dng->fnumber > 0) {
+		TIFFSetField(tif, EXIFTAG_FNUMBER, dng->fnumber);
+	}
+
 
 	uint64_t exif_offset = 0;
 	if (!TIFFWriteCustomDirectory(tif, &exif_offset)) {

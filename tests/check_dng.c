@@ -46,6 +46,7 @@ TEST generate_simple_dng(void)
 		ASSERT_EQm("Set software", 1, libdng_set_software(&info, "Software"));
 		ASSERT_EQm("Set orientation", 1, libdng_set_orientation(&info, 4));
 		ASSERT_EQm("Set exposuretime", 1, libdng_set_exposure_time(&info, 0.04f));
+		ASSERT_EQm("Set fnumber", 1, libdng_set_fnumber(&info, 2.8f));
 	uint8_t *data = malloc(1280 * 720);
 		ASSERT_EQm("Write DNG", 1, libdng_write(&info, "test.dng", 1280, 720, data, 1280 * 720));
 	free(data);
@@ -92,6 +93,7 @@ TEST generate_simple_dng(void)
 	// Switch to the EXIF block with the generic picture metadata
 	TIFFReadEXIFDirectory(im, exif_offset);
 		CHECK_CALL(check_float_tag(im, EXIFTAG_EXPOSURETIME, "EXPOSURETIME", 0.04f));
+		CHECK_CALL(check_float_tag(im, EXIFTAG_FNUMBER, "FNUMBER", 2.8f));
 
 		PASS();
 }

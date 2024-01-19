@@ -34,6 +34,7 @@ $makedng -w 1280 -h 720 -p RGGB \
   -e 2 \
   -t 0.01 \
   -i 1600 \
+  -f 2.8 \
   scratch/data.rgb scratch/fields.dng
 
 # Validate DNG

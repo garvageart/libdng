@@ -24,6 +24,7 @@ usage(char *name)
 	fprintf(stderr, "  -e program     Set the exposure program in EXIF, 0-8\n");
 	fprintf(stderr, "  -t seconds     Set the exposure time in seconds\n");
 	fprintf(stderr, "  -i speed       Set the ISO speed rating\n");
+	fprintf(stderr, "  -f fnumber     Set the aperture as f/value\n");
 }
 
 int
@@ -49,8 +50,9 @@ main(int argc, char *argv[])
 	uint16_t exposure_program = 0;
 	float exposure_time = 0;
 	uint32_t iso = 0;
+	float fnumber = 0.0f;
 
-	while ((c = getopt(argc, argv, "w:h:p:o:m:s:c:n:b:e:t:i:")) != -1) {
+	while ((c = getopt(argc, argv, "w:h:p:o:m:s:c:n:b:e:t:i:f:")) != -1) {
 		switch (c) {
 			case 'w':
 				val = strtol(optarg, &end, 10);
@@ -104,6 +106,9 @@ main(int argc, char *argv[])
 			case 'i':
 				val = strtol(optarg, &end, 10);
 				iso = (uint32_t) val;
+				break;
+			case 'f':
+				fnumber = strtof(optarg, &end);
 				break;
 			case '?':
 				if (optopt == 'd' || optopt == 'l') {
@@ -175,6 +180,9 @@ main(int argc, char *argv[])
 	}
 	if (iso > 0) {
 		libdng_set_iso(&info, iso);
+	}
+	if (fnumber > 0) {
+		libdng_set_fnumber(&info, fnumber);
 	}
 
 	printf("Reading %s...\n", argv[optind]);
