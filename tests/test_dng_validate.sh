@@ -26,16 +26,16 @@ $makedng -w 1280 -h 720 -p BGGR -m Test,BGGR scratch/data.rgb scratch/BGGR.dng
 $makedng -w 1280 -h 720 -p RG10 scratch/data.rgb scratch/RG10.dng
 $makedng -w 1280 -h 720 -p SRGGB10P scratch/data.rgb scratch/SRGGB10P.dng
 
-$makedng -w 1280 -h 720 -p RGGB \
-  -s "Testsuite" \
-  -o 2 \
-  -n 0.1,0.2,0.3 \
-  -b 0.4,0.5,0.6 \
-  -e 2 \
-  -t 0.01 \
-  -i 1600 \
-  -f 2.8 \
-  -l 50,1.5 \
+$makedng --width 1280 --height 720 --pixfmt RGGB \
+  --software "Testsuite" \
+  --orientation 2 \
+  --neutral 0.1,0.2,0.3 \
+  --balance 0.4,0.5,0.6 \
+  --program 2 \
+  --exposure 0.01 \
+  --iso 1600 \
+  --fnumber 2.8 \
+  --focal-length 50,1.5 \
   scratch/data.rgb scratch/fields.dng
 
 # Validate DNG

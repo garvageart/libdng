@@ -17,45 +17,45 @@ metadata to correctly render the file.
 
 # OPTIONS
 
-*-w width*, *-h height*
+*-w width*, *-h height*, *--width width*, *--height height*
 	Set the width and height of the source data. This is a required option.
 
-*-p pixelfmt*
+*-p pixelfmt*, *--pixfmt pixelfmt*
 	Set the pixelformat for the source data. This accepts a V4L2 fourcc code or
 	the V4L constant name like "RGGB" and "SRGGB8". This is a required option.
 
-*-m make,model*
+*-m make,model*, *--model make,model*
 	Set the camera Make and Model as a comma seperated string.
 
-*-s software*
+*-s software*, *--software software*
 	Set the name of the camera software used to take the picture.
 
-*-o orientation*
+*-o orientation*, *--orientation orientation*
 	Set the orientation of the image data as a number from 1-8 from the DNG
 	specification.
 
-*-c dcp-file*
+*-c dcp-file*, *--calibration dcp-file*
 	Load a DCP calibration file and append the color profile to the final DNG.
 
-*-n red,green,blue*
+*-n red,green,blue*, *--neutral red,green,blue*
 	Set the neutral whitepoint for the picture as the 3 floating point gain values.
 
-*-b red,green,blue*
+*-b red,green,blue*, *--balance red,green,blue*
 	Set the analog sensor gain for the three color channels as three comma seperated floats.
 
-*-e program*
+*-e program*, *--program program*
 	Set the exposure program in the EXIF data using one of the program numbers from the DNG spec.
 
-*-t seconds*
+*-t seconds*, *--exposure seconds*
 	Set the exposure time for the picture in seconds (eg. 0.01 for 1/100)
 
-*-i iso-speed*
+*-i iso-speed*, *--iso iso-speed*
 	Set the ISO speed rating for the picture
 
-*-f fnumber*
+*-f fnumber*, *--fnumber fnumber*
 	Set the aperture size, or f-number of the picture (2.2 for f/2.2)
 
-*-l focal-length,crop-factor* | *-l focal-length*
+*-l focal-length,crop-factor* | *-l focal-length*, *--focal-length len,crop*, *--focal-length len*
 	Set the focal length for the lens. If no crop factor for the system is supplied a 35mm full-frame sensor is assumed.
 
 # PIXEL FORMATS

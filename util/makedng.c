@@ -12,19 +12,20 @@ usage(char *name)
 	fprintf(stderr, "Usage: %s -w width -h height -p fmt srcfile dstfile\n", name);
 	fprintf(stderr, "Convert raw sensor data to DNG\n\n");
 	fprintf(stderr, "Arguments:\n");
-	fprintf(stderr, "  -w width       Source data width\n");
-	fprintf(stderr, "  -h height      Source data height\n");
-	fprintf(stderr, "  -p fmt         Source data pixelformat\n");
-	fprintf(stderr, "  -m make,model  Make and model, comma seperated\n");
-	fprintf(stderr, "  -s software    Software name\n");
-	fprintf(stderr, "  -o orientation Orientation number [0-9]\n");
-	fprintf(stderr, "  -c dcp         Append calibration data from .dcp file\n");
-	fprintf(stderr, "  -n r,g,b       Set the whitepoint as 3 comma seperated floats\n");
-	fprintf(stderr, "  -b r,g,b       Set sensor analog gain as 3 comma seperated floats\n");
-	fprintf(stderr, "  -e program     Set the exposure program in EXIF, 0-8\n");
-	fprintf(stderr, "  -t seconds     Set the exposure time in seconds\n");
-	fprintf(stderr, "  -i speed       Set the ISO speed rating\n");
-	fprintf(stderr, "  -f fnumber     Set the aperture as f/value\n");
+	fprintf(stderr, "  -w, --width width               Source data width\n");
+	fprintf(stderr, "  -h, --height height             Source data height\n");
+	fprintf(stderr, "  -p, --pixfmt fmt                Source data pixelformat\n");
+	fprintf(stderr, "  -m, --model make,model          Make and model, comma seperated\n");
+	fprintf(stderr, "  -s, --software software         Software name\n");
+	fprintf(stderr, "  -o, --orientation orientation   Orientation number [0-9]\n");
+	fprintf(stderr, "  -c, --calibration dcp           Append calibration data from .dcp file\n");
+	fprintf(stderr, "  -n, --neutral r,g,b             Set the whitepoint as 3 comma seperated floats\n");
+	fprintf(stderr, "  -b, --balance r,g,b             Set sensor analog gain as 3 comma seperated floats\n");
+	fprintf(stderr, "  -e, --program program           Set the exposure program in EXIF, 0-8\n");
+	fprintf(stderr, "  -t, --exposure seconds          Set the exposure time in seconds\n");
+	fprintf(stderr, "  -i, --iso speed                 Set the ISO speed rating\n");
+	fprintf(stderr, "  -f, --fnumber fnumber           Set the aperture as f/value\n");
+	fprintf(stderr, "  -l, --focal-length length,crop  Set the aperture as f/value\n");
 }
 
 int
@@ -54,7 +55,25 @@ main(int argc, char *argv[])
 	float focal_length = 0.0f;
 	float crop_factor = 1.0f;
 
-	while ((c = getopt(argc, argv, "w:h:p:o:m:s:c:n:b:e:t:i:f:l:")) != -1) {
+	static struct option long_options[] = {
+		{"width", required_argument, NULL, 'w'},
+		{"height", required_argument, NULL, 'h'},
+		{"orientation", required_argument, NULL, 'o'},
+		{"pixfmt", required_argument, NULL, 'p'},
+		{"model", required_argument, NULL, 'm'},
+		{"software", required_argument, NULL, 's'},
+		{"calibration", required_argument, NULL, 'c'},
+		{"neutral", required_argument, NULL, 'n'},
+		{"balance", required_argument, NULL, 'b'},
+		{"program", required_argument, NULL, 'e'},
+		{"exposure", required_argument, NULL, 't'},
+		{"iso", required_argument, NULL, 'i'},
+		{"fnumber", required_argument, NULL, 'f'},
+		{"focal-length", required_argument, NULL, 'l'},
+		{"help", no_argument, NULL, 'H'},
+	};
+	int option_index = 0;
+	while ((c = getopt_long(argc, argv, "w:h:p:o:m:s:c:n:b:e:t:i:f:l:", long_options, &option_index)) != -1) {
 		switch (c) {
 			case 'w':
 				val = strtol(optarg, &end, 10);
@@ -119,6 +138,9 @@ main(int argc, char *argv[])
 					return 1;
 				}
 				break;
+			case 'H':
+				usage(argv[0]);
+				return 0;
 			case '?':
 				if (optopt == 'd' || optopt == 'l') {
 					fprintf(stderr, "Option -%c requires an argument.\n", optopt);
