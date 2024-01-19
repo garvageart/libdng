@@ -49,6 +49,9 @@ metadata to correctly render the file.
 *-t seconds*
 	Set the exposure time for the picture in seconds (eg. 0.01 for 1/100)
 
+*-i iso-speed*
+	Set the ISO speed rating for the picture
+
 # PIXEL FORMATS
 
 The pixel format argument accepts the following values:

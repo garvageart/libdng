@@ -17,6 +17,7 @@ typedef struct {
 		struct tm datetime;
 		uint16_t exposure_program;
 		float exposure_time;
+		uint32_t iso;
 
 		// Raw image data
 		uint16_t bayer_pattern_dimensions[2];
@@ -127,6 +128,9 @@ libdng_set_exposure_program(libdng_info *dng, uint16_t mode);
 
 EXPORT int
 libdng_set_exposure_time(libdng_info *dng, float seconds);
+
+EXPORT int
+libdng_set_iso(libdng_info *dng, uint32_t isospeed);
 
 EXPORT int
 libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data,

@@ -23,6 +23,7 @@ usage(char *name)
 	fprintf(stderr, "  -b r,g,b       Set sensor analog gain as 3 comma seperated floats\n");
 	fprintf(stderr, "  -e program     Set the exposure program in EXIF, 0-8\n");
 	fprintf(stderr, "  -t seconds     Set the exposure time in seconds\n");
+	fprintf(stderr, "  -i speed       Set the ISO speed rating\n");
 }
 
 int
@@ -47,8 +48,9 @@ main(int argc, char *argv[])
 	float balance[] = {1.0f, 1.0f, 1.0f};
 	uint16_t exposure_program = 0;
 	float exposure_time = 0;
+	uint32_t iso = 0;
 
-	while ((c = getopt(argc, argv, "w:h:p:o:m:s:c:n:b:e:t:")) != -1) {
+	while ((c = getopt(argc, argv, "w:h:p:o:m:s:c:n:b:e:t:i:")) != -1) {
 		switch (c) {
 			case 'w':
 				val = strtol(optarg, &end, 10);
@@ -98,6 +100,10 @@ main(int argc, char *argv[])
 				break;
 			case 't':
 				exposure_time = strtof(optarg, &end);
+				break;
+			case 'i':
+				val = strtol(optarg, &end, 10);
+				iso = (uint32_t) val;
 				break;
 			case '?':
 				if (optopt == 'd' || optopt == 'l') {
@@ -166,6 +172,9 @@ main(int argc, char *argv[])
 	libdng_set_exposure_program(&info, exposure_program);
 	if (exposure_time > 0) {
 		libdng_set_exposure_time(&info, exposure_time);
+	}
+	if (iso > 0) {
+		libdng_set_iso(&info, iso);
 	}
 
 	printf("Reading %s...\n", argv[optind]);

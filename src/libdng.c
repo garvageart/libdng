@@ -59,6 +59,7 @@ libdng_new(libdng_info *dng)
 	dng->analogbalance[2] = 1.0f;
 
 	dng->exposure_time = 0.0f;
+	dng->iso = 0;
 }
 
 int
@@ -212,6 +213,15 @@ libdng_set_exposure_time(libdng_info *dng, float seconds)
 	return 1;
 }
 
+int
+libdng_set_iso(libdng_info *dng, uint32_t isospeed)
+{
+	if (dng == NULL)
+		return 0;
+
+	dng->iso = isospeed;
+	return 1;
+}
 
 int
 libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data,
@@ -351,6 +361,9 @@ libdng_write_with_thumbnail(libdng_info *dng, const char *path, unsigned int wid
 
 	if (dng->exposure_time > 0) {
 		TIFFSetField(tif, EXIFTAG_EXPOSURETIME, dng->exposure_time);
+	}
+	if(dng->iso > 0) {
+		TIFFSetField(tif, EXIFTAG_ISOSPEEDRATINGS, 1, &dng->iso);
 	}
 
 	uint64_t exif_offset = 0;
