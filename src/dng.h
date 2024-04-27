@@ -146,4 +146,5 @@ static const TIFFFieldInfo custom_dng_fields[] = {
 	{DNGTAG_PROFILE_HUE_SAT_MAP_DATA_2, -1, -1, TIFF_FLOAT,     FIELD_CUSTOM, 1, 1, "ProfileHueSatMapData2"},
 	{DNGTAG_CFAREPEATPATTERNDIM,        -1, -1, TIFF_SHORT,     FIELD_CUSTOM, 1, 1, "CFARepeatPatternDim"},
 	{DNGTAG_CFAPATTERN,                 -1, -1, TIFF_BYTE,      FIELD_CUSTOM, 1, 1, "CFAPattern"},
+	{DNGTAG_LINEARIZATIONTABLE,         -1, -1, TIFF_SHORT,     FIELD_CUSTOM, 1, 1, "LinearizationTable"},
 };

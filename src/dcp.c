@@ -124,6 +124,14 @@ libdng_load_calibration_file(libdng_info *dng, const char *path)
 						get_float(buffer, offset + (j * 4));
 				}
 				break;
+			case DNGTAG_LINEARIZATIONTABLE:
+				dng->tone_curve = malloc(count * sizeof(float));
+				dng->tone_curve_length = count;
+				for (int j = 0; j < count; j++) {
+					dng->tone_curve[j] =
+						get_float(buffer, offset + (j * 4));
+				}
+				break;
 			case DNGTAG_PROFILE_HUE_SAT_MAP_DIMS:
 				dng->hue_sat_map_dims[0] = get_int32(buffer, offset);
 				dng->hue_sat_map_dims[1] = get_int32(buffer, offset + 4);
