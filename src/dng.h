@@ -131,6 +131,10 @@
 #define DNGTAG_FORWARD_MATRIX_1 50964
 #define DNGTAG_FORWARD_MATRIX_2 50965
 
+// Tags from the CinemaDNG specification
+#define DNGTAG_TIMECODES 51043
+#define DNGTAG_FRAMERATE 51044
+#define DNGTAG_TSTOP 51058
 
 /*
  * Field definitions for the tags in the DNG spec
@@ -147,4 +151,5 @@ static const TIFFFieldInfo custom_dng_fields[] = {
 	{DNGTAG_CFAREPEATPATTERNDIM,        -1, -1, TIFF_SHORT,     FIELD_CUSTOM, 1, 1, "CFARepeatPatternDim"},
 	{DNGTAG_CFAPATTERN,                 -1, -1, TIFF_BYTE,      FIELD_CUSTOM, 1, 1, "CFAPattern"},
 	{DNGTAG_LINEARIZATIONTABLE,         -1, -1, TIFF_SHORT,     FIELD_CUSTOM, 1, 1, "LinearizationTable"},
+	{DNGTAG_FRAMERATE,                  -1,  -1,  TIFF_SRATIONAL, FIELD_CUSTOM, 1, 1, "FrameRate"},
 };

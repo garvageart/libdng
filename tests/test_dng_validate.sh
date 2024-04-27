@@ -36,6 +36,7 @@ $makedng --width 1280 --height 720 --pixfmt RGGB \
   --iso 1600 \
   --fnumber 2.8 \
   --focal-length 50,1.5 \
+  --frame-rate 30 \
   scratch/data.rgb scratch/fields.dng
 
 # Validate DNG

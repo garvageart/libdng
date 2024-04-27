@@ -48,6 +48,7 @@ TEST generate_simple_dng(void)
 		ASSERT_EQm("Set exposuretime", 1, libdng_set_exposure_time(&info, 0.04f));
 		ASSERT_EQm("Set fnumber", 1, libdng_set_fnumber(&info, 2.8f));
 		ASSERT_EQm("Set fnumber", 1, libdng_set_focal_length(&info, 50.0f, 1.5f));
+		ASSERT_EQm("Set framerate", 1, libdng_set_frame_rate(&info, 30.0f));
 	uint8_t *data = malloc(1280 * 720);
 		ASSERT_EQm("Write DNG", 1, libdng_write(&info, "test.dng", 1280, 720, data, 1280 * 720));
 	free(data);

@@ -63,6 +63,7 @@ libdng_new(libdng_info *dng)
 	dng->fnumber = 0.0f;
 	dng->crop_factor = 1.0f;
 	dng->focal_length = 0.0f;
+	dng->frame_rate = 0.0f;
 }
 
 int
@@ -257,6 +258,16 @@ libdng_set_focal_length(libdng_info *dng, float focal_length, float crop_factor)
 }
 
 int
+libdng_set_frame_rate(libdng_info *dng, float framerate)
+{
+	if (dng == NULL)
+		return 0;
+
+	dng->frame_rate = framerate;
+	return 1;
+}
+
+int
 libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data,
 	size_t length)
 {
@@ -332,6 +343,9 @@ libdng_write_with_thumbnail(libdng_info *dng, const char *path, unsigned int wid
 		snprintf(ucm, sizeof(ucm), "%s %s", dng->camera_make, dng->camera_model);
 	}
 	TIFFSetField(tif, DNGTAG_UNIQUECAMERAMODEL, ucm);
+	if (dng->frame_rate != 0.0f) {
+		TIFFSetField(tif, DNGTAG_FRAMERATE, 1, &dng->frame_rate);
+	}
 	TIFFSetField(tif, TIFFTAG_SUBIFD, 1, &ifd0_offsets);
 
 	if (thumb_length == 0) {

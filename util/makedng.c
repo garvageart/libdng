@@ -26,6 +26,7 @@ usage(char *name)
 	fprintf(stderr, "  -i, --iso speed                 Set the ISO speed rating\n");
 	fprintf(stderr, "  -f, --fnumber fnumber           Set the aperture as f/value\n");
 	fprintf(stderr, "  -l, --focal-length length,crop  Set the aperture as f/value\n");
+	fprintf(stderr, "  -F, --frame-rate framerate      Set the CinemaDNG framerate\n");
 }
 
 int
@@ -52,6 +53,7 @@ main(int argc, char *argv[])
 	float exposure_time = 0;
 	uint32_t iso = 0;
 	float fnumber = 0.0f;
+	float framerate = 0.0f;
 	float focal_length = 0.0f;
 	float crop_factor = 1.0f;
 
@@ -70,10 +72,11 @@ main(int argc, char *argv[])
 		{"iso", required_argument, NULL, 'i'},
 		{"fnumber", required_argument, NULL, 'f'},
 		{"focal-length", required_argument, NULL, 'l'},
+		{"frame-rate", required_argument, NULL, 'F'},
 		{"help", no_argument, NULL, 'H'},
 	};
 	int option_index = 0;
-	while ((c = getopt_long(argc, argv, "w:h:p:o:m:s:c:n:b:e:t:i:f:l:", long_options, &option_index)) != -1) {
+	while ((c = getopt_long(argc, argv, "w:h:p:o:m:s:c:n:b:e:t:i:f:l:F:", long_options, &option_index)) != -1) {
 		switch (c) {
 			case 'w':
 				val = strtol(optarg, &end, 10);
@@ -130,6 +133,9 @@ main(int argc, char *argv[])
 				break;
 			case 'f':
 				fnumber = strtof(optarg, &end);
+				break;
+			case 'F':
+				framerate = strtof(optarg, &end);
 				break;
 			case 'l':
 				val = sscanf(optarg, "%f,%f", &focal_length, &crop_factor);
@@ -217,6 +223,9 @@ main(int argc, char *argv[])
 	}
 	if (focal_length > 0) {
 		libdng_set_focal_length(&info, focal_length, crop_factor);
+	}
+	if (framerate > 0) {
+		libdng_set_frame_rate(&info, framerate);
 	}
 
 	printf("Reading %s...\n", argv[optind]);
