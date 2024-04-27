@@ -375,7 +375,7 @@ libdng_write_with_thumbnail(libdng_info *dng, const char *path, unsigned int wid
 	TIFFSetField(tif, TIFFTAG_SAMPLESPERPIXEL, 1);
 	TIFFSetField(tif, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
 	TIFFSetField(tif, TIFFTAG_SAMPLEFORMAT, SAMPLEFORMAT_UINT);
-#if (TIFFLIB_VERSION > 20230000)
+#if (TIFFLIB_VERSION > 20230000 && TIFFLIB_VERSION < 20240321)
 	TIFFSetField(tif, DNGTAG_CFAREPEATPATTERNDIM, 2, dng->bayer_pattern_dimensions);
 #else
 	TIFFSetField(tif, DNGTAG_CFAREPEATPATTERNDIM, dng->bayer_pattern_dimensions);
