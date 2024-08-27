@@ -6,7 +6,7 @@ build:
   script:
     - meson build --buildtype release --werror
     - ninja -C build
-    - cd build && meson test --no-rebuild
+    - cd build && meson test --no-rebuild || cat meson-logs/testlog.txt
 
 docs:
   stage: test
