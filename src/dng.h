@@ -136,6 +136,12 @@
 #define DNGTAG_FRAMERATE 51044
 #define DNGTAG_TSTOP 51058
 
+// Custom tags
+
+#define MPTAG_VERSION 49982
+#define MPTAG_DISTORTION 49983
+#define MPTAG_VIGNETTE 49984
+
 /*
  * Field definitions for the tags in the DNG spec
  */
@@ -151,5 +157,8 @@ static const TIFFFieldInfo custom_dng_fields[] = {
 	{DNGTAG_CFAREPEATPATTERNDIM,        -1, -1, TIFF_SHORT,     FIELD_CUSTOM, 1, 1, "CFARepeatPatternDim"},
 	{DNGTAG_CFAPATTERN,                 -1, -1, TIFF_BYTE,      FIELD_CUSTOM, 1, 1, "CFAPattern"},
 	{DNGTAG_LINEARIZATIONTABLE,         -1, -1, TIFF_SHORT,     FIELD_CUSTOM, 1, 1, "LinearizationTable"},
-	{DNGTAG_FRAMERATE,                  -1,  -1,  TIFF_SRATIONAL, FIELD_CUSTOM, 1, 1, "FrameRate"},
+	{DNGTAG_FRAMERATE,                  -1, -1, TIFF_SRATIONAL, FIELD_CUSTOM, 1, 1, "FrameRate"},
+	{MPTAG_VERSION,                  -1,  -1,  TIFF_BYTE,     FIELD_CUSTOM, 1, 1, "MPVersion"},
+	{MPTAG_DISTORTION,                  3,  3,  TIFF_FLOAT,     FIELD_CUSTOM, 1, 0, "MPDistortion"},
+	{MPTAG_VIGNETTE,                    3,  3,  TIFF_FLOAT,     FIELD_CUSTOM, 1, 0, "MPVignette"},
 };

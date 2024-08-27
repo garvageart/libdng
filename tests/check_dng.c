@@ -49,6 +49,8 @@ TEST generate_simple_dng(void)
 		ASSERT_EQm("Set fnumber", 1, libdng_set_fnumber(&info, 2.8f));
 		ASSERT_EQm("Set fnumber", 1, libdng_set_focal_length(&info, 50.0f, 1.5f));
 		ASSERT_EQm("Set framerate", 1, libdng_set_frame_rate(&info, 30.0f));
+		ASSERT_EQm("Set distortion", 1, libdng_set_distortion(&info, 1.0f, 2.0f, 3.0f));
+		ASSERT_EQm("Set vignette", 1, libdng_set_vignette(&info, 1.0f, -1.0f, 6.0f));
 	uint8_t *data = malloc(1280 * 720);
 		ASSERT_EQm("Write DNG", 1, libdng_write(&info, "test.dng", 1280, 720, data, 1280 * 720));
 	free(data);
@@ -76,6 +78,37 @@ TEST generate_simple_dng(void)
 		CHECK_CALL(check_str_tag(im, TIFFTAG_UNIQUECAMERAMODEL, "UCM", "Make Model"));
 		CHECK_CALL(check_str_tag(im, TIFFTAG_SOFTWARE, "SOFTWARE", "Software"));
 		CHECK_CALL(check_int_tag(im, TIFFTAG_ORIENTATION, "ORIENTATION", 4));
+
+	// Check the custom tags
+#define MPTAG_VERSION 49982
+#define MPTAG_DISTORTION 49983
+#define MPTAG_VIGNETTE 49984
+	unsigned short count;
+	float *fvalues;
+	uint8_t *u8values;
+
+	if (TIFFGetField(im, MPTAG_VERSION, &count, &u8values) != 1) {
+			FAILm("Could not read MPTAG_VERSION");
+	}
+		ASSERT_EQ_FMTm("MPTAG_VERSION count", 4, count, "%d");
+		ASSERT_EQ_FMTm("MPTAG_VERSION[0]", 1, u8values[0], "%d");
+		ASSERT_EQ_FMTm("MPTAG_VERSION[1]", 0, u8values[1], "%d");
+		ASSERT_EQ_FMTm("MPTAG_VERSION[2]", 0, u8values[2], "%d");
+		ASSERT_EQ_FMTm("MPTAG_VERSION[3]", 0, u8values[3], "%d");
+
+	if (TIFFGetField(im, MPTAG_DISTORTION, &fvalues) != 1) {
+			FAILm("Could not read MPTAG_DISTORTION");
+	}
+		ASSERT_EQ_FMTm("MPTAG_DISTORTION[0]", 1.0f, fvalues[0], "%f");
+		ASSERT_EQ_FMTm("MPTAG_DISTORTION[1]", 2.0f, fvalues[1], "%f");
+		ASSERT_EQ_FMTm("MPTAG_DISTORTION[2]", 3.0f, fvalues[2], "%f");
+
+	if (TIFFGetField(im, MPTAG_VIGNETTE, &fvalues) != 1) {
+			FAILm("Could not read MPTAG_VIGNETTE");
+	}
+		ASSERT_EQ_FMTm("MPTAG_VIGNETTE[0]", 1.0f, fvalues[0], "%f");
+		ASSERT_EQ_FMTm("MPTAG_VIGNETTE[1]", -1.0f, fvalues[1], "%f");
+		ASSERT_EQ_FMTm("MPTAG_VIGNETTE[2]", 6.0f, fvalues[2], "%f");
 
 	// Switch to IFD1 which has the raw data
 	int subifd_count = 0;
@@ -147,7 +180,7 @@ TEST read_dng(void)
 	char parsed[sizeof "2011-10-08T07:07:09Z"];
 	strftime(orig, sizeof orig, "%FT%TZ", &testtime);
 	strftime(parsed, sizeof parsed, "%FT%TZ", &dng.datetime);
-	ASSERT_STR_EQm("DateTime", orig, parsed);
+		ASSERT_STR_EQm("DateTime", orig, parsed);
 
 		ASSERT_EQm("Year", testtime.tm_year, dng.datetime.tm_year);
 		ASSERT_EQm("Month", testtime.tm_mon, dng.datetime.tm_mon);

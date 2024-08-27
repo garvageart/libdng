@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <float.h>
 
 #define DNG_SUBFILETYPE_ORIGINAL 0
 #define DNG_SUBFILETYPE_THUMBNAIL 1
@@ -65,6 +66,13 @@ libdng_new(libdng_info *dng)
 	dng->crop_factor = 1.0f;
 	dng->focal_length = 0.0f;
 	dng->frame_rate = 0.0f;
+
+	dng->distortion_a = 0.0f;
+	dng->distortion_b = 0.0f;
+	dng->distortion_c = 0.0f;
+	dng->vignette_k1 = 0.0f;
+	dng->vignette_k2 = 0.0f;
+	dng->vignette_k3 = 0.0f;
 }
 
 int
@@ -269,6 +277,30 @@ libdng_set_frame_rate(libdng_info *dng, float framerate)
 }
 
 int
+libdng_set_distortion(libdng_info *dng, float a, float b, float c)
+{
+	if (dng == NULL)
+		return 0;
+
+	dng->distortion_a = a;
+	dng->distortion_b = b;
+	dng->distortion_c = c;
+	return 1;
+}
+
+int
+libdng_set_vignette(libdng_info *dng, float k1, float k2, float k3)
+{
+	if (dng == NULL)
+		return 0;
+
+	dng->vignette_k1 = k1;
+	dng->vignette_k2 = k2;
+	dng->vignette_k3 = k3;
+	return 1;
+}
+
+int
 libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data,
 	size_t length)
 {
@@ -330,6 +362,18 @@ libdng_write_with_thumbnail(libdng_info *dng, const char *path, unsigned int wid
 
 	if (dng->datetime.tm_year) {
 		TIFFSetField(tif, TIFFTAG_DATETIME, datetime);
+	}
+
+	TIFFSetField(tif, MPTAG_VERSION, 4, "\1\0\0\0");
+
+	if (dng->distortion_a != 0.0f) {
+		float dist[] = {dng->distortion_a, dng->distortion_b, dng->distortion_c};
+		TIFFSetField(tif, MPTAG_DISTORTION, dist);
+	}
+
+	if (dng->vignette_k1 != 0.0f) {
+		float vign[] = {dng->vignette_k1, dng->vignette_k2, dng->vignette_k3};
+		TIFFSetField(tif, MPTAG_VIGNETTE, vign);
 	}
 
 	TIFFSetField(tif, DNGTAG_DNGVERSION, "\001\004\0\0");
@@ -506,6 +550,25 @@ libdng_read(libdng_info *dng, const char *path)
 	if (TIFFGetField(tif, DNGTAG_FORWARDMATRIX2, &count, &fvalues) == 1) {
 		for (int i = 0; i < count; i++) {
 			dng->forward_matrix_2[i] = fvalues[i];
+		}
+	}
+	uint8_t mptag_version = 0;
+	if (TIFFGetField(tif, MPTAG_VERSION, &count, &u8values) == 1) {
+		if (count == 4) {
+			mptag_version = u8values[0];
+		}
+	}
+	if (mptag_version == 1) {
+		if (TIFFGetField(tif, MPTAG_DISTORTION, &count, &fvalues) == 1) {
+			dng->distortion_a = fvalues[0];
+			dng->distortion_b = fvalues[1];
+			dng->distortion_c = fvalues[2];
+		}
+
+		if (TIFFGetField(tif, MPTAG_VIGNETTE, &count, &fvalues) == 1) {
+			dng->vignette_k1 = fvalues[0];
+			dng->vignette_k2 = fvalues[1];
+			dng->vignette_k3 = fvalues[2];
 		}
 	}
 

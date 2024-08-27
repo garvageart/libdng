@@ -47,6 +47,13 @@ typedef struct {
 		bool needs_repack;
 		uint32_t width;
 		uint32_t height;
+
+		float distortion_a;
+		float distortion_b;
+		float distortion_c;
+		float vignette_k1;
+		float vignette_k2;
+		float vignette_k3;
 } libdng_info;
 
 #define LIBDNG_ORIENTATION_TOPLEFT 1
@@ -146,6 +153,12 @@ libdng_set_focal_length(libdng_info *dng, float focal_length, float crop_factor)
 
 EXPORT int
 libdng_set_frame_rate(libdng_info *dng, float framerate);
+
+EXPORT int
+libdng_set_distortion(libdng_info *dng, float a, float b, float c);
+
+EXPORT int
+libdng_set_vignette(libdng_info *dng, float k1, float k2, float k3);
 
 EXPORT int
 libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data,
