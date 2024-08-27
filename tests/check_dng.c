@@ -143,6 +143,12 @@ TEST read_dng(void)
 		ASSERT_EQ_FMTm("Focal length", 75.0f, dng.focal_length, "%f");
 		ASSERT_EQ_FMTm("Crop factor", 1.6f, dng.crop_factor, "%f");
 
+	char orig[sizeof "2011-10-08T07:07:09Z"];
+	char parsed[sizeof "2011-10-08T07:07:09Z"];
+	strftime(orig, sizeof orig, "%FT%TZ", &testtime);
+	strftime(parsed, sizeof parsed, "%FT%TZ", &dng.datetime);
+	ASSERT_STR_EQm("DateTime", orig, parsed);
+
 		ASSERT_EQm("Year", testtime.tm_year, dng.datetime.tm_year);
 		ASSERT_EQm("Month", testtime.tm_mon, dng.datetime.tm_mon);
 		ASSERT_EQm("Day", testtime.tm_yday, dng.datetime.tm_yday);
