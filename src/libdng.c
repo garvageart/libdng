@@ -8,6 +8,7 @@
 #include <sys/time.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #define DNG_SUBFILETYPE_ORIGINAL 0
 #define DNG_SUBFILETYPE_THUMBNAIL 1
@@ -141,7 +142,7 @@ libdng_set_datetime(libdng_info *dng, struct tm time)
 	if (dng == NULL)
 		return 0;
 
-	dng->datetime = time;
+	memcpy(&dng->datetime, &time, sizeof(struct tm));
 	return 1;
 }
 
@@ -290,7 +291,6 @@ libdng_write_with_thumbnail(libdng_info *dng, const char *path, unsigned int wid
 	if (!tif) {
 		return 0;
 	}
-	libdng_set_datetime_now(dng);
 
 	char datetime[20] = {0};
 	if (dng->datetime.tm_year) {
@@ -459,6 +459,7 @@ libdng_read(libdng_info *dng, const char *path)
 
 	// Reading the "main" image which is the thumbnail
 	TIFFGetField(tif, TIFFTAG_ORIENTATION, &dng->orientation);
+
 	if (TIFFGetField(tif, TIFFTAG_MAKE, &cvalues) == 1) {
 		dng->camera_make = strdup(cvalues);
 	}
@@ -471,6 +472,10 @@ libdng_read(libdng_info *dng, const char *path)
 	if (TIFFGetField(tif, TIFFTAG_SOFTWARE, &cvalues) == 1) {
 		dng->software = strdup(cvalues);
 	}
+	if (TIFFGetField(tif, TIFFTAG_DATETIME, &cvalues) == 1) {
+		strptime(cvalues, "%Y:%m:%d %H:%M:%S", &dng->datetime);
+	}
+	TIFFGetField(tif, TIFFTAG_ORIENTATION, &dng->orientation);
 
 	if (TIFFGetField(tif, DNGTAG_ASSHOTNEUTRAL, &count, &fvalues) == 1) {
 		for (int i = 0; i < count; i++) {
@@ -507,11 +512,16 @@ libdng_read(libdng_info *dng, const char *path)
 	int subifd_count = 0;
 	void *ptr;
 	toff_t subifd_offsets[2];
+	toff_t exif_offset = 0;
+
+	TIFFGetField(tif, TIFFTAG_EXIFIFD, &exif_offset);
 	TIFFGetField(tif, TIFFTAG_SUBIFD, &subifd_count, &ptr);
 	memcpy(subifd_offsets, ptr, subifd_count * sizeof(subifd_offsets[0]));
 	TIFFSetSubDirectory(tif, subifd_offsets[0]);
 
 	TIFFGetField(tif, TIFFTAG_BITSPERSAMPLE, &dng->bit_depth);
+	TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &dng->width);
+	TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &dng->height);
 
 	if (TIFFGetField(tif, DNGTAG_WHITELEVEL, &count, &u32values) == 1) {
 		dng->whitelevel = u32values[0];
@@ -525,6 +535,20 @@ libdng_read(libdng_info *dng, const char *path)
 		}
 		for (int i = 0; i < count; i++) {
 			dng->cfapattern[i] = u8values[i];
+		}
+	}
+
+	if (exif_offset != 0) {
+		TIFFReadEXIFDirectory(tif, exif_offset);
+		TIFFGetField(tif, EXIFTAG_EXPOSURETIME, &dng->exposure_time);
+		TIFFGetField(tif, EXIFTAG_EXPOSUREPROGRAM, &dng->exposure_program);
+		TIFFGetField(tif, EXIFTAG_FNUMBER, &dng->fnumber);
+		TIFFGetField(tif, EXIFTAG_FOCALLENGTH, &dng->focal_length);
+		uint16_t fffocallength;
+		if (TIFFGetField(tif, EXIFTAG_FOCALLENGTHIN35MMFILM, &fffocallength) == 1) {
+			if (fffocallength > 0.0f) {
+				dng->crop_factor = (float) fffocallength / dng->focal_length;
+			}
 		}
 	}
 

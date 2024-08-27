@@ -45,6 +45,8 @@ typedef struct {
 
 		uint16_t bit_depth;
 		bool needs_repack;
+		uint32_t width;
+		uint32_t height;
 } libdng_info;
 
 #define LIBDNG_ORIENTATION_TOPLEFT 1

@@ -101,9 +101,62 @@ TEST generate_simple_dng(void)
 		PASS();
 }
 
+TEST read_dng(void)
+{
+	// Generate test timestamp
+	struct tm testtime;
+	strptime("2024-08-27 01:02:03", "%Y-%m-%d %H:%M:%S", &testtime);
+
+	// Generate a file to read
+	libdng_info info = {0};
+	libdng_new(&info);
+	libdng_set_datetime(&info, testtime);
+	libdng_set_mode_from_name(&info, "RGGB");
+	libdng_set_make_model(&info, "Make", "Model");
+	libdng_set_software(&info, "Software");
+	libdng_set_orientation(&info, LIBDNG_ORIENTATION_RIGHTBOT);
+	libdng_set_exposure_time(&info, 1.4f);
+	libdng_set_exposure_program(&info, LIBDNG_EXPOSUREPROGRAM_PORTRAIT);
+	libdng_set_fnumber(&info, 1.8f);
+	libdng_set_focal_length(&info, 75.0f, 1.6f);
+
+	uint8_t *data = malloc(1280 * 720);
+	libdng_write(&info, "test.dng", 1280, 720, data, 1280 * 720);
+	free(data);
+	libdng_free(&info);
+
+	// Read the file again
+	libdng_info dng = {0};
+	libdng_read(&dng, "test.dng");
+		ASSERT_EQm("Bit depth", 8, dng.bit_depth);
+		ASSERT_EQm("CFFA[0]", 0, dng.cfapattern[0]);
+		ASSERT_EQm("CFFA[1]", 1, dng.cfapattern[1]);
+		ASSERT_EQm("CFFA[2]", 1, dng.cfapattern[2]);
+		ASSERT_EQm("CFFA[3]", 2, dng.cfapattern[3]);
+		ASSERT_STR_EQm("Make", "Make", dng.camera_make);
+		ASSERT_STR_EQm("Model", "Model", dng.camera_model);
+		ASSERT_STR_EQm("Software", "Software", dng.software);
+		ASSERT_EQm("Orientation", LIBDNG_ORIENTATION_RIGHTBOT, dng.orientation);
+		ASSERT_EQ_FMTm("Exposure time", 1.4f, dng.exposure_time, "%f");
+		ASSERT_EQm("Exposure program", LIBDNG_EXPOSUREPROGRAM_PORTRAIT, dng.exposure_program);
+		ASSERT_EQ_FMTm("FNumber", 1.8f, dng.fnumber, "%f");
+		ASSERT_EQ_FMTm("Focal length", 75.0f, dng.focal_length, "%f");
+		ASSERT_EQ_FMTm("Crop factor", 1.6f, dng.crop_factor, "%f");
+
+		ASSERT_EQm("Year", testtime.tm_year, dng.datetime.tm_year);
+		ASSERT_EQm("Month", testtime.tm_mon, dng.datetime.tm_mon);
+		ASSERT_EQm("Day", testtime.tm_yday, dng.datetime.tm_yday);
+		ASSERT_EQ_FMTm("Hour", testtime.tm_hour, dng.datetime.tm_hour, "%d");
+		ASSERT_EQm("Minute", testtime.tm_min, dng.datetime.tm_min);
+		ASSERT_EQm("Second", testtime.tm_sec, dng.datetime.tm_sec);
+
+		PASS();
+}
+
 SUITE (test_suite)
 {
 		RUN_TEST(generate_simple_dng);
+		RUN_TEST(read_dng);
 }
 
 GREATEST_MAIN_DEFS();
