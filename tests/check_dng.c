@@ -51,6 +51,10 @@ TEST generate_simple_dng(void)
 		ASSERT_EQm("Set framerate", 1, libdng_set_frame_rate(&info, 30.0f));
 		ASSERT_EQm("Set distortion", 1, libdng_set_distortion(&info, 1.0f, 2.0f, 3.0f));
 		ASSERT_EQm("Set vignette", 1, libdng_set_vignette(&info, 1.0f, -1.0f, 6.0f));
+		ASSERT_EQm("Set color matrix 1", 1, libdng_set_color_matrix_1(&info, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
+		ASSERT_EQm("Set color matrix 2", 1, libdng_set_color_matrix_2(&info, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
+		ASSERT_EQm("Set forward matrix 1", 1, libdng_set_forward_matrix_1(&info, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
+		ASSERT_EQm("Set forward matrix 2", 1, libdng_set_forward_matrix_2(&info, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
 	uint8_t *data = malloc(1280 * 720);
 		ASSERT_EQm("Write DNG", 1, libdng_write(&info, "test.dng", 1280, 720, data, 1280 * 720));
 	free(data);

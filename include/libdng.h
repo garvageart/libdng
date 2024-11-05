@@ -161,6 +161,18 @@ EXPORT int
 libdng_set_vignette(libdng_info *dng, float k1, float k2, float k3);
 
 EXPORT int
+libdng_set_color_matrix_1(libdng_info *dng, float v1, float v2, float v3, float v4, float v5, float v6, float v7, float v8, float v9);
+
+EXPORT int
+libdng_set_color_matrix_2(libdng_info *dng, float v1, float v2, float v3, float v4, float v5, float v6, float v7, float v8, float v9);
+
+EXPORT int
+libdng_set_forward_matrix_1(libdng_info *dng, float v1, float v2, float v3, float v4, float v5, float v6, float v7, float v8, float v9);
+
+EXPORT int
+libdng_set_forward_matrix_2(libdng_info *dng, float v1, float v2, float v3, float v4, float v5, float v6, float v7, float v8, float v9);
+
+EXPORT int
 libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data,
 	size_t length);
 

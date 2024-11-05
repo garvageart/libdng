@@ -42,6 +42,8 @@ libdng_new(libdng_info *dng)
 	for (size_t i = 0; i < 9; i++) {
 		dng->color_matrix_1[i] = 0.0f;
 		dng->color_matrix_2[i] = 0.0f;
+		dng->forward_matrix_1[i] = 0.0f;
+		dng->forward_matrix_2[i] = 0.0f;
 	}
 	dng->color_matrix_1[0] = 1.0f;
 	dng->color_matrix_1[4] = 1.0f;
@@ -301,6 +303,82 @@ libdng_set_vignette(libdng_info *dng, float k1, float k2, float k3)
 }
 
 int
+libdng_set_color_matrix_1(libdng_info *dng, float v1, float v2, float v3, float v4, float v5, float v6, float v7, float v8, float v9)
+{
+	if (dng == NULL)
+		return 0;
+
+	dng->color_matrix_1[0] = v1;
+	dng->color_matrix_1[1] = v2;
+	dng->color_matrix_1[2] = v3;
+	dng->color_matrix_1[3] = v4;
+	dng->color_matrix_1[4] = v5;
+	dng->color_matrix_1[5] = v6;
+	dng->color_matrix_1[6] = v7;
+	dng->color_matrix_1[7] = v8;
+	dng->color_matrix_1[8] = v9;
+
+	return 1;
+}
+
+int
+libdng_set_color_matrix_2(libdng_info *dng, float v1, float v2, float v3, float v4, float v5, float v6, float v7, float v8, float v9)
+{
+	if (dng == NULL)
+		return 0;
+
+	dng->color_matrix_2[0] = v1;
+	dng->color_matrix_2[1] = v2;
+	dng->color_matrix_2[2] = v3;
+	dng->color_matrix_2[3] = v4;
+	dng->color_matrix_2[4] = v5;
+	dng->color_matrix_2[5] = v6;
+	dng->color_matrix_2[6] = v7;
+	dng->color_matrix_2[7] = v8;
+	dng->color_matrix_2[8] = v9;
+
+	return 1;
+}
+
+int
+libdng_set_forward_matrix_1(libdng_info *dng, float v1, float v2, float v3, float v4, float v5, float v6, float v7, float v8, float v9)
+{
+	if (dng == NULL)
+		return 0;
+
+	dng->forward_matrix_1[0] = v1;
+	dng->forward_matrix_1[1] = v2;
+	dng->forward_matrix_1[2] = v3;
+	dng->forward_matrix_1[3] = v4;
+	dng->forward_matrix_1[4] = v5;
+	dng->forward_matrix_1[5] = v6;
+	dng->forward_matrix_1[6] = v7;
+	dng->forward_matrix_1[7] = v8;
+	dng->forward_matrix_1[8] = v9;
+
+	return 1;
+}
+
+int
+libdng_set_forward_matrix_2(libdng_info *dng, float v1, float v2, float v3, float v4, float v5, float v6, float v7, float v8, float v9)
+{
+	if (dng == NULL)
+		return 0;
+
+	dng->forward_matrix_2[0] = v1;
+	dng->forward_matrix_2[1] = v2;
+	dng->forward_matrix_2[2] = v3;
+	dng->forward_matrix_2[3] = v4;
+	dng->forward_matrix_2[4] = v5;
+	dng->forward_matrix_2[5] = v6;
+	dng->forward_matrix_2[6] = v7;
+	dng->forward_matrix_2[7] = v8;
+	dng->forward_matrix_2[8] = v9;
+
+	return 1;
+}
+
+int
 libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data,
 	size_t length)
 {
@@ -350,6 +428,9 @@ libdng_write_with_thumbnail(libdng_info *dng, const char *path, unsigned int wid
 	TIFFSetField(tif, TIFFTAG_SAMPLESPERPIXEL, 3);
 	TIFFSetField(tif, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
 	TIFFSetField(tif, DNGTAG_COLOR_MATRIX_1, 9, dng->color_matrix_1);
+	TIFFSetField(tif, DNGTAG_COLOR_MATRIX_2, 9, dng->color_matrix_2);
+	TIFFSetField(tif, DNGTAG_FORWARD_MATRIX_1, 9, dng->forward_matrix_1);
+	TIFFSetField(tif, DNGTAG_FORWARD_MATRIX_2, 9, dng->forward_matrix_2);
 	TIFFSetField(tif, DNGTAG_ASSHOTNEUTRAL, 3, dng->neutral);
 	TIFFSetField(tif, DNGTAG_ANALOGBALANCE, 3, dng->analogbalance);
 
