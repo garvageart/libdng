@@ -1,5 +1,5 @@
 project('libdng', 'c',
-    version: '0.1.1',
+    version: '0.2.0',
     license: 'MIT',
     default_options: ['c_std=c11'],
 )
@@ -14,9 +14,9 @@ libtiff = dependency('libtiff-4')
 # b) If interfaces have been changed or added, but binary compatibility has
 #    been preserved, change to C+1:0:A+1
 # c) If the interface is the same as the previous version, change to C:R+1:A
-libdng_lt_c=1
+libdng_lt_c=2
 libdng_lt_r=0
-libdng_lt_a=0
+libdng_lt_a=1
 
 libdng_so_version = '@0@.@1@.@2@'.format((libdng_lt_c - libdng_lt_a),
                                               libdng_lt_a,
