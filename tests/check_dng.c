@@ -186,12 +186,12 @@ TEST read_dng(void)
 	strftime(parsed, sizeof parsed, "%FT%TZ", &dng.datetime);
 		ASSERT_STR_EQm("DateTime", orig, parsed);
 
-		ASSERT_EQm("Year", testtime.tm_year, dng.datetime.tm_year);
-		ASSERT_EQm("Month", testtime.tm_mon, dng.datetime.tm_mon);
-		ASSERT_EQm("Day", testtime.tm_yday, dng.datetime.tm_yday);
+		ASSERT_EQ_FMTm("Year", testtime.tm_year, dng.datetime.tm_year, "%d");
+		ASSERT_EQ_FMTm("Month", testtime.tm_mon, dng.datetime.tm_mon, "%d");
+		ASSERT_EQ_FMTm("Day", testtime.tm_mday, dng.datetime.tm_mday, "%d");
 		ASSERT_EQ_FMTm("Hour", testtime.tm_hour, dng.datetime.tm_hour, "%d");
-		ASSERT_EQm("Minute", testtime.tm_min, dng.datetime.tm_min);
-		ASSERT_EQm("Second", testtime.tm_sec, dng.datetime.tm_sec);
+		ASSERT_EQ_FMTm("Minute", testtime.tm_min, dng.datetime.tm_min, "%d");
+		ASSERT_EQ_FMTm("Second", testtime.tm_sec, dng.datetime.tm_sec, "%d");
 
 		PASS();
 }
