@@ -21,7 +21,7 @@ TEST load_pinephone_dcp(void)
 	char name[20] = {0};
 	for (int i = 0; i < 9; i++) {
 		snprintf(name, 20, "COLORMATRIX1[%d]", i);
-			ASSERT_EQ_FMTm(strdup(name), colormatrix1[i], info.color_matrix_1[i], "%f");
+			ASSERT_IN_RANGEm(strdup(name), colormatrix1[i], info.color_matrix_1[i], 0.0000001f);
 	}
 
 	float forwardmatrix1[] = {
@@ -31,7 +31,7 @@ TEST load_pinephone_dcp(void)
 	};
 	for (int i = 0; i < 9; i++) {
 		snprintf(name, 20, "FORWARDMATRIX1[%d]", i);
-			ASSERT_EQ_FMTm(strdup(name), forwardmatrix1[i], info.forward_matrix_1[i], "%f");
+			ASSERT_IN_RANGEm(strdup(name), forwardmatrix1[i], info.forward_matrix_1[i], 0.0000001f);
 	}
 
 		ASSERT_EQ_FMTm("ILLUMINANT1", LIBDNG_ILLUMINANT_STANDARD_A, info.illuminant_1, "%d");
@@ -41,7 +41,7 @@ TEST load_pinephone_dcp(void)
 	double tonecurve[] = {0.0, 0.0, 1.0, 1.0};
 	for (size_t i = 0; i < info.tone_curve_length; i++) {
 		snprintf(name, 20, "TONECURVE[%zu]", i);
-			ASSERT_EQ_FMTm(strdup(name), tonecurve[i], info.tone_curve[i], "%f");
+			ASSERT_IN_RANGEm(strdup(name), tonecurve[i], info.tone_curve[i], 0.0000001f);
 	}
 
 	// HueSat map is 90x30x1 in this DCP (ProfileHueSatMapDims: Hues = 90, Sats = 30, Vals = 1)

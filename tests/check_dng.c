@@ -32,7 +32,7 @@ check_float_tag(TIFF *im, uint32_t tag, const char *name, float expected)
 	if (TIFFGetField(im, tag, &temp) != 1) {
 			FAILm(name);
 	}
-		ASSERT_EQ_FMTm(name, expected, temp, "%f");
+		ASSERT_IN_RANGEm(name, expected, temp, 0.0000001f);
 		PASS();
 }
 
@@ -103,16 +103,16 @@ TEST generate_simple_dng(void)
 	if (TIFFGetField(im, MPTAG_DISTORTION, &fvalues) != 1) {
 			FAILm("Could not read MPTAG_DISTORTION");
 	}
-		ASSERT_EQ_FMTm("MPTAG_DISTORTION[0]", 1.0f, fvalues[0], "%f");
-		ASSERT_EQ_FMTm("MPTAG_DISTORTION[1]", 2.0f, fvalues[1], "%f");
-		ASSERT_EQ_FMTm("MPTAG_DISTORTION[2]", 3.0f, fvalues[2], "%f");
+		ASSERT_IN_RANGEm("MPTAG_DISTORTION[0]", 1.0f, fvalues[0], 0.0000001f);
+		ASSERT_IN_RANGEm("MPTAG_DISTORTION[1]", 2.0f, fvalues[1], 0.0000001f);
+		ASSERT_IN_RANGEm("MPTAG_DISTORTION[2]", 3.0f, fvalues[2], 0.0000001f);
 
 	if (TIFFGetField(im, MPTAG_VIGNETTE, &fvalues) != 1) {
 			FAILm("Could not read MPTAG_VIGNETTE");
 	}
-		ASSERT_EQ_FMTm("MPTAG_VIGNETTE[0]", 1.0f, fvalues[0], "%f");
-		ASSERT_EQ_FMTm("MPTAG_VIGNETTE[1]", -1.0f, fvalues[1], "%f");
-		ASSERT_EQ_FMTm("MPTAG_VIGNETTE[2]", 6.0f, fvalues[2], "%f");
+		ASSERT_IN_RANGEm("MPTAG_VIGNETTE[0]", 1.0f, fvalues[0], 0.0000001f);
+		ASSERT_IN_RANGEm("MPTAG_VIGNETTE[1]", -1.0f, fvalues[1], 0.0000001f);
+		ASSERT_IN_RANGEm("MPTAG_VIGNETTE[2]", 6.0f, fvalues[2], 0.0000001f);
 
 	// Switch to IFD1 which has the raw data
 	int subifd_count = 0;
@@ -174,11 +174,11 @@ TEST read_dng(void)
 		ASSERT_STR_EQm("Model", "Model", dng.camera_model);
 		ASSERT_STR_EQm("Software", "Software", dng.software);
 		ASSERT_EQm("Orientation", LIBDNG_ORIENTATION_RIGHTBOT, dng.orientation);
-		ASSERT_EQ_FMTm("Exposure time", 1.4f, dng.exposure_time, "%f");
+		ASSERT_IN_RANGEm("Exposure time", 1.4f, dng.exposure_time, 0.0000001f);
 		ASSERT_EQm("Exposure program", LIBDNG_EXPOSUREPROGRAM_PORTRAIT, dng.exposure_program);
-		ASSERT_EQ_FMTm("FNumber", 1.8f, dng.fnumber, "%f");
-		ASSERT_EQ_FMTm("Focal length", 75.0f, dng.focal_length, "%f");
-		ASSERT_EQ_FMTm("Crop factor", 1.6f, dng.crop_factor, "%f");
+		ASSERT_IN_RANGEm("FNumber", 1.8f, dng.fnumber, 0.0000001f);
+		ASSERT_IN_RANGEm("Focal length", 75.0f, dng.focal_length, 0.0000001f);
+		ASSERT_IN_RANGEm("Crop factor", 1.6f, dng.crop_factor, 0.0000001f);
 
 	char orig[sizeof "2011-10-08T07:07:09Z"];
 	char parsed[sizeof "2011-10-08T07:07:09Z"];
