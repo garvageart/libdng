@@ -15,12 +15,12 @@ usage(char *name)
 	fprintf(stderr, "  -w, --width width               Source data width\n");
 	fprintf(stderr, "  -h, --height height             Source data height\n");
 	fprintf(stderr, "  -p, --pixfmt fmt                Source data pixelformat\n");
-	fprintf(stderr, "  -m, --model make,model          Make and model, comma seperated\n");
+	fprintf(stderr, "  -m, --model make,model          Make and model, comma separated\n");
 	fprintf(stderr, "  -s, --software software         Software name\n");
 	fprintf(stderr, "  -o, --orientation orientation   Orientation number [0-9]\n");
 	fprintf(stderr, "  -c, --calibration dcp           Append calibration data from .dcp file\n");
-	fprintf(stderr, "  -n, --neutral r,g,b             Set the whitepoint as 3 comma seperated floats\n");
-	fprintf(stderr, "  -b, --balance r,g,b             Set sensor analog gain as 3 comma seperated floats\n");
+	fprintf(stderr, "  -n, --neutral r,g,b             Set the whitepoint as 3 comma separated floats\n");
+	fprintf(stderr, "  -b, --balance r,g,b             Set sensor analog gain as 3 comma separated floats\n");
 	fprintf(stderr, "  -e, --program program           Set the exposure program in EXIF, 0-8\n");
 	fprintf(stderr, "  -t, --exposure seconds          Set the exposure time in seconds\n");
 	fprintf(stderr, "  -i, --iso speed                 Set the ISO speed rating\n");

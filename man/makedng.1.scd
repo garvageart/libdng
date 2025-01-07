@@ -25,7 +25,7 @@ metadata to correctly render the file.
 	the V4L constant name like "RGGB" and "SRGGB8". This is a required option.
 
 *-m make,model*, *--model make,model*
-	Set the camera Make and Model as a comma seperated string.
+	Set the camera Make and Model as a comma separated string.
 
 *-s software*, *--software software*
 	Set the name of the camera software used to take the picture.
@@ -41,7 +41,7 @@ metadata to correctly render the file.
 	Set the neutral whitepoint for the picture as the 3 floating point gain values.
 
 *-b red,green,blue*, *--balance red,green,blue*
-	Set the analog sensor gain for the three color channels as three comma seperated floats.
+	Set the analog sensor gain for the three color channels as three comma separated floats.
 
 *-e program*, *--program program*
 	Set the exposure program in the EXIF data using one of the program numbers from the DNG spec.
