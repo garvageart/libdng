@@ -54,6 +54,9 @@ typedef struct {
 		float vignette_k1;
 		float vignette_k2;
 		float vignette_k3;
+
+		// v4l2 bytesperline in case it's weird
+		unsigned int stride;
 } libdng_info;
 
 #define LIBDNG_ORIENTATION_TOPLEFT 1
@@ -171,6 +174,9 @@ libdng_set_forward_matrix_1(libdng_info *dng, float v1, float v2, float v3, floa
 
 EXPORT int
 libdng_set_forward_matrix_2(libdng_info *dng, float v1, float v2, float v3, float v4, float v5, float v6, float v7, float v8, float v9);
+
+EXPORT int
+libdng_set_stride(libdng_info *dng, unsigned int stride);
 
 EXPORT int
 libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data,

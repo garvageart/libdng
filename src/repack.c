@@ -4,8 +4,7 @@
 #include "repack.h"
 
 void
-dng_repack_10bit(const uint8_t *src_buf, uint8_t *dst_buf, uint32_t width, uint32_t height)
-{
+dng_repack_10bit(const uint8_t *src_buf, uint8_t *dst_buf, uint32_t width, uint32_t height, unsigned int so) {
 	uint16_t pixels[4];
 	uint64_t bits_per_width = (uint64_t) width * 10;
 	uint64_t remainder = bits_per_width % 8;
@@ -16,6 +15,9 @@ dng_repack_10bit(const uint8_t *src_buf, uint8_t *dst_buf, uint32_t width, uint3
 	} else {
 		stride = (bits_per_width + 8 - remainder) / 8;
 		padding_bytes = 8 - remainder;
+	}
+	if (so > 0 ){
+		padding_bytes = so - stride;
 	}
 
 	size_t si = 0;
@@ -49,8 +51,7 @@ dng_repack_10bit(const uint8_t *src_buf, uint8_t *dst_buf, uint32_t width, uint3
 }
 
 void
-dng_repack_12bit(const uint8_t *src_buf, uint8_t *dst_buf, uint32_t width, uint32_t height)
-{
+dng_repack_12bit(const uint8_t *src_buf, uint8_t *dst_buf, uint32_t width, uint32_t height, unsigned int so) {
 	uint16_t pixels[4];
 	uint64_t bits_per_width = (uint64_t) width * 12;
 	uint64_t remainder = bits_per_width % 8;
@@ -61,6 +62,9 @@ dng_repack_12bit(const uint8_t *src_buf, uint8_t *dst_buf, uint32_t width, uint3
 	} else {
 		stride = (bits_per_width + 8 - remainder) / 8;
 		padding_bytes = 8 - remainder;
+	}
+	if (so > 0 ){
+		padding_bytes = so - stride;
 	}
 
 	size_t si = 0;
@@ -97,13 +101,12 @@ dng_repack_12bit(const uint8_t *src_buf, uint8_t *dst_buf, uint32_t width, uint3
 
 
 void
-dng_repack(const uint8_t *src_buf, uint8_t *dst_buf, uint32_t width, uint32_t height, int bitdepth)
-{
+dng_repack(const uint8_t *src_buf, uint8_t *dst_buf, uint32_t width, uint32_t height, int bitdepth, unsigned int stride) {
 	switch (bitdepth) {
 		case 10:
-			return dng_repack_10bit(src_buf, dst_buf, width, height);
+			return dng_repack_10bit(src_buf, dst_buf, width, height, stride);
 		case 12:
-			return dng_repack_12bit(src_buf, dst_buf, width, height);
+			return dng_repack_12bit(src_buf, dst_buf, width, height, stride);
 		default:
 			fprintf(stderr, "dng_repack: invalid bitdepth %d\n", bitdepth);
 			break;

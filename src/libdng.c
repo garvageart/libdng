@@ -77,6 +77,17 @@ libdng_new(libdng_info *dng)
 	dng->vignette_k3 = 0.0f;
 }
 
+bool
+is_empty_matrix(const float matrix[9])
+{
+	for(size_t i=0;i<9;i++) {
+		if(matrix[i] != 0.0f){
+			return false;
+		}
+	}
+	return true;
+}
+
 int
 libdng_set_mode_from_index(libdng_info *dng, int index)
 {
@@ -379,6 +390,16 @@ libdng_set_forward_matrix_2(libdng_info *dng, float v1, float v2, float v3, floa
 }
 
 int
+libdng_set_stride(libdng_info *dng, unsigned int stride)
+{
+	if (dng == NULL)
+		return 0;
+
+	dng->stride = stride;
+	return 1;
+}
+
+int
 libdng_write(libdng_info *dng, const char *path, unsigned int width, unsigned int height, const uint8_t *data,
 	size_t length)
 {
@@ -394,7 +415,7 @@ libdng_write_with_thumbnail(libdng_info *dng, const char *path, unsigned int wid
 	uint8_t *raw_frame = (uint8_t *) data;
 	if (dng->needs_repack) {
 		raw_frame = malloc(length);
-		dng_repack(data, raw_frame, width, height, dng->bit_depth);
+		dng_repack(data, raw_frame, width, height, dng->bit_depth, dng->stride);
 	}
 
 	TIFF *tif = TIFFOpen(path, "w");
@@ -427,10 +448,14 @@ libdng_write_with_thumbnail(libdng_info *dng, const char *path, unsigned int wid
 	TIFFSetField(tif, TIFFTAG_ORIENTATION, dng->orientation);
 	TIFFSetField(tif, TIFFTAG_SAMPLESPERPIXEL, 3);
 	TIFFSetField(tif, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
-	TIFFSetField(tif, DNGTAG_COLOR_MATRIX_1, 9, dng->color_matrix_1);
-	TIFFSetField(tif, DNGTAG_COLOR_MATRIX_2, 9, dng->color_matrix_2);
-	TIFFSetField(tif, DNGTAG_FORWARD_MATRIX_1, 9, dng->forward_matrix_1);
-	TIFFSetField(tif, DNGTAG_FORWARD_MATRIX_2, 9, dng->forward_matrix_2);
+	if(!is_empty_matrix(dng->color_matrix_1))
+		TIFFSetField(tif, DNGTAG_COLOR_MATRIX_1, 9, dng->color_matrix_1);
+	if(!is_empty_matrix(dng->color_matrix_2))
+		TIFFSetField(tif, DNGTAG_COLOR_MATRIX_2, 9, dng->color_matrix_2);
+	if(!is_empty_matrix(dng->forward_matrix_1))
+		TIFFSetField(tif, DNGTAG_FORWARD_MATRIX_1, 9, dng->forward_matrix_1);
+	if(!is_empty_matrix(dng->forward_matrix_2))
+		TIFFSetField(tif, DNGTAG_FORWARD_MATRIX_2, 9, dng->forward_matrix_2);
 	TIFFSetField(tif, DNGTAG_ASSHOTNEUTRAL, 3, dng->neutral);
 	TIFFSetField(tif, DNGTAG_ANALOGBALANCE, 3, dng->analogbalance);
 

@@ -7,8 +7,7 @@
 #include "libdng.h"
 
 void
-usage(char *name)
-{
+usage(char *name) {
 	fprintf(stderr, "Usage: %s -w width -h height -p fmt srcfile dstfile\n", name);
 	fprintf(stderr, "Convert raw sensor data to DNG\n\n");
 	fprintf(stderr, "Arguments:\n");
@@ -30,8 +29,7 @@ usage(char *name)
 }
 
 int
-main(int argc, char *argv[])
-{
+main(int argc, char *argv[]) {
 	int c;
 
 	char *end;
@@ -42,6 +40,7 @@ main(int argc, char *argv[])
 	libdng_new(&info);
 	unsigned int width = 0;
 	unsigned int height = 0;
+	unsigned int stride = 0;
 	char *pixelfmt = NULL;
 	char *model = NULL;
 	char *software = NULL;
@@ -58,25 +57,26 @@ main(int argc, char *argv[])
 	float crop_factor = 1.0f;
 
 	static struct option long_options[] = {
-		{"width", required_argument, NULL, 'w'},
-		{"height", required_argument, NULL, 'h'},
-		{"orientation", required_argument, NULL, 'o'},
-		{"pixfmt", required_argument, NULL, 'p'},
-		{"model", required_argument, NULL, 'm'},
-		{"software", required_argument, NULL, 's'},
-		{"calibration", required_argument, NULL, 'c'},
-		{"neutral", required_argument, NULL, 'n'},
-		{"balance", required_argument, NULL, 'b'},
-		{"program", required_argument, NULL, 'e'},
-		{"exposure", required_argument, NULL, 't'},
-		{"iso", required_argument, NULL, 'i'},
-		{"fnumber", required_argument, NULL, 'f'},
-		{"focal-length", required_argument, NULL, 'l'},
-		{"frame-rate", required_argument, NULL, 'F'},
-		{"help", no_argument, NULL, 'H'},
+			{"width",        required_argument, NULL, 'w'},
+			{"height",       required_argument, NULL, 'h'},
+			{"stride",       required_argument, NULL, 'S'},
+			{"orientation",  required_argument, NULL, 'o'},
+			{"pixfmt",       required_argument, NULL, 'p'},
+			{"model",        required_argument, NULL, 'm'},
+			{"software",     required_argument, NULL, 's'},
+			{"calibration",  required_argument, NULL, 'c'},
+			{"neutral",      required_argument, NULL, 'n'},
+			{"balance",      required_argument, NULL, 'b'},
+			{"program",      required_argument, NULL, 'e'},
+			{"exposure",     required_argument, NULL, 't'},
+			{"iso",          required_argument, NULL, 'i'},
+			{"fnumber",      required_argument, NULL, 'f'},
+			{"focal-length", required_argument, NULL, 'l'},
+			{"frame-rate",   required_argument, NULL, 'F'},
+			{"help",         no_argument,       NULL, 'H'},
 	};
 	int option_index = 0;
-	while ((c = getopt_long(argc, argv, "w:h:p:o:m:s:c:n:b:e:t:i:f:l:F:", long_options, &option_index)) != -1) {
+	while ((c = getopt_long(argc, argv, "w:h:p:o:m:s:c:n:b:e:t:i:f:l:F:S:", long_options, &option_index)) != -1) {
 		switch (c) {
 			case 'w':
 				val = strtol(optarg, &end, 10);
@@ -85,6 +85,10 @@ main(int argc, char *argv[])
 			case 'h':
 				val = strtol(optarg, &end, 10);
 				height = (unsigned int) val;
+				break;
+			case 'S':
+				val = strtol(optarg, &end, 10);
+				stride = (unsigned int) val;
 				break;
 			case 'o':
 				val = strtol(optarg, &end, 10);
@@ -241,11 +245,21 @@ main(int argc, char *argv[])
 	fread(data, src_size, 1, src);
 	fclose(src);
 
+	printf("Source file: %ld bytes\n", src_size);
+	uint64_t expect_size = width * height * 10 / 8;
+	printf("Should be  : %ld bytes\n", expect_size);
+	printf("Load addr: %p\n", data);
+
+	if(stride > 0) {
+		libdng_set_stride(&info, stride);
+	}
+
 	printf("Writing %s...\n", argv[optind + 1]);
 	if (!libdng_write(&info, argv[optind + 1], width, height, data, src_size)) {
 		fprintf(stderr, "Could not write DNG\n");
 		return 1;
 	}
+	printf("Free addr: %p\n", data);
 	free(data);
 	libdng_free(&info);
 	return 0;
