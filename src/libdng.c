@@ -718,8 +718,8 @@ libdng_read_image(libdng_info *dng, const char *path, uint8_t index, uint8_t **d
 		TIFFSetSubDirectory(tif, subifd_offsets[0]);
 	}
 
-	uint32_t samples_per_pixel;
-	uint32_t bits_per_sample;
+	uint16_t samples_per_pixel;
+	uint16_t bits_per_sample;
 
 	TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, width);
 	TIFFGetField(tif, TIFFTAG_IMAGELENGTH, height);
