@@ -534,7 +534,7 @@ libdng_write_with_thumbnail(libdng_info *dng, const char *path, unsigned int wid
 	TIFFSetField(tif, DNGTAG_CFAPATTERN, 4, dng->cfapattern);
 	TIFFSetField(tif, DNGTAG_WHITELEVEL, 1, &dng->whitelevel);
 
-	unsigned int stride = width;
+	unsigned int stride = dng->stride;
 	for (int row = 0; row < height; row++) {
 		TIFFWriteScanline(tif, (void *) raw_frame + (row * stride), row, 0);
 	}
