@@ -58,6 +58,12 @@ makedng = executable('makedng', 'util/makedng.c',
     install: true,
 )
 
+makedng = executable('dumpdng', 'util/dumpdng.c',
+                     link_with: libdng,
+                     include_directories: inc,
+                     install: true,
+)
+
 test_dng_validate = find_program('tests/test_dng_validate.sh')
 dng_validate = find_program('dng_validate', required: false)
 if dng_validate.found()

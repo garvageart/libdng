@@ -25,6 +25,10 @@ add_executable(dngmerge util/dngmerge.c)
 target_include_directories(dngmerge PUBLIC include)
 target_link_libraries(dngmerge PUBLIC libdng)
 
+add_executable(dumpdng util/dumpdng.c)
+target_include_directories(dumpdng PUBLIC include)
+target_link_libraries(dumpdng PUBLIC libdng)
+
 find_program(BASH bash)
 enable_testing()
 
