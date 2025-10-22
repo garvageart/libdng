@@ -15,9 +15,16 @@ check_dcp = executable('check_dcp', 'check_dcp.c', 'greatest.h',
     dependencies: libtiff,
     install: false,
 )
+check_repack = executable('check_repack', 'check_repack.c', 'greatest.h',
+    include_directories: inc,
+    link_with: libdng,
+    dependencies: libtiff,
+    install: false,
+)
 
 subdir('fixture')
 
 test('check_mode', check_mode)
 test('check_dng', check_dng)
 test('check_dcp', check_dcp, workdir: meson.current_build_dir())
+test('check_repack', check_repack)

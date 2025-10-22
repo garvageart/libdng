@@ -415,7 +415,7 @@ libdng_write_with_thumbnail(libdng_info *dng, const char *path, unsigned int wid
 	uint8_t *raw_frame = (uint8_t *) data;
 	if (dng->needs_repack) {
 		raw_frame = malloc(length);
-		dng_repack(data, raw_frame, width, height, dng->bit_depth, dng->stride);
+		libdng_repack(data, raw_frame, width, height, dng->bit_depth, dng->stride);
 	}
 
 	TIFF *tif = TIFFOpen(path, "w");

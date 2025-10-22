@@ -101,7 +101,7 @@ dng_repack_12bit(const uint8_t *src_buf, uint8_t *dst_buf, uint32_t width, uint3
 
 
 void
-dng_repack(const uint8_t *src_buf, uint8_t *dst_buf, uint32_t width, uint32_t height, int bitdepth, unsigned int stride) {
+libdng_repack(const uint8_t *src_buf, uint8_t *dst_buf, uint32_t width, uint32_t height, int bitdepth, unsigned int stride) {
 	switch (bitdepth) {
 		case 10:
 			return dng_repack_10bit(src_buf, dst_buf, width, height, stride);
