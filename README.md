@@ -1,6 +1,7 @@
 ## libdng
 
-> [!NOTE] This is a fork of [libdng](https://gitlab.com/megapixels-org/libdng), intended to integrate
+> [!NOTE]
+> This is a fork of [libdng](https://gitlab.com/megapixels-org/libdng), intended to integrate
 the official Adobe DNG SDK.
 
 This is a library for making it easier to generate valid DNG files following
