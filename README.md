@@ -1,5 +1,8 @@
 ## libdng
 
+[!NOTE} This is a fork of [libdng](https://gitlab.com/megapixels-org/libdng), intended to integrate
+the official Adobe DNG SDK.
+
 This is a library for making it easier to generate valid DNG files following
 the Adobe Digital Negative specification. This library is written for writing
 pictures created with [Megapixels](https://gitlab.com/megapixels-org/Megapixels)
